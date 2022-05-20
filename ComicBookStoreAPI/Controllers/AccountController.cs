@@ -1,0 +1,206 @@
+﻿using ComicBookStoreAPI.Domain.Entities;
+using ComicBookStoreAPI.Domain.Exceptions;
+using ComicBookStoreAPI.Domain.Interfaces.Services;
+using ComicBookStoreAPI.Domain.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
+namespace ComicBookStoreAPI.Controllers
+{
+    [Route("account/")]
+    public class AccountController : ControllerBase
+    {
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IAccountService _accountService;
+        private readonly ILogger<AccountController> _logger;
+
+        public AccountController(UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            IAccountService accountService, ILogger<AccountController> logger)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _accountService = accountService;
+            _logger = logger;
+        }
+
+        [HttpGet]
+        [Route("getCurrentUser")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(user);
+        }
+
+        [HttpGet]
+        [Route("getCurrentUserCard")]
+        public async Task<IActionResult> GetCurrentUserCard()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            UserCardDto userCard = new UserCardDto()
+            {
+                UserName = user.UserName,
+                AvatarPictureName = user.AvatarPictureName
+            };
+
+            return Ok(userCard);
+        }
+
+        [HttpGet]
+        [Route("getUserLoginStatus")]
+        public async Task<IActionResult> GetuserLoginStatus()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var loginStatus = new IsLoggedDto();
+            if (user == null)
+            {
+                loginStatus.Status = false;
+                return Ok(loginStatus);
+            }
+            loginStatus.Status = true;
+            return Ok(loginStatus);
+        }
+
+
+
+        [HttpPost]
+        [Route("register")]
+        public async Task<IActionResult> Register([FromBody] UserRegisterDto registerDto)
+        {
+            _logger.LogInformation("Register action invoked");
+
+            var findEmail = await _userManager.FindByEmailAsync(registerDto.Email);
+            if (findEmail != null)
+            {
+                return Unauthorized("email taken");
+            }
+
+            var newUser = new ApplicationUser
+            {
+                Email = registerDto.Email,
+                UserName = registerDto.UserName,
+            };
+
+            var resoult = await _userManager.CreateAsync(newUser, registerDto.Password);
+
+            if (resoult.Succeeded)
+            {
+
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
+
+                await _userManager.ConfirmEmailAsync(newUser, token);
+
+                _logger.LogInformation($"User with Id = {newUser.Id} was successfully registered");
+
+                return Ok();
+            }
+            return NotFound();
+        }
+
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginDto loginDto)
+        {
+            var user = await _userManager.FindByEmailAsync(loginDto.Email);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var resoult = await _signInManager.PasswordSignInAsync(user, loginDto.Password, true, false);
+
+            if (resoult.Succeeded)
+            {
+                _logger.LogInformation($"User with Id = {user.Id} was successfully signed in");
+
+                return Ok();
+            }
+
+            return NotFound();
+        }
+
+        [HttpPost]
+        [Route("externalLogin")]
+        public async Task<IActionResult> ExternalLogin([FromBody] ExternalAuthDto externalAuth)
+        {
+            _logger.LogInformation("External authentication process involved");
+
+            var payload = await _accountService.VerifyGoogleToken(externalAuth);
+            if (payload == null)
+                throw new InvalidExternalAuthenticationException("Google token could not be verifyed");
+
+            var info = new UserLoginInfo(externalAuth.Provider, payload.Subject, externalAuth.Provider);
+            var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+            if (user == null)
+            {
+                user = await _userManager.FindByEmailAsync(payload.Email);
+                if (user == null)
+                {
+                    user = new ApplicationUser
+                    {
+                        Email = payload.Email,
+                        UserName = payload.GivenName
+                    };
+                    var resoult = await _userManager.CreateAsync(user);
+
+                    await _userManager.AddLoginAsync(user, info);
+
+                    if (resoult.Succeeded)
+                    {
+                        _logger.LogInformation($"User with Id = {user.Id} was successfully created");
+
+                        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                        await _userManager.ConfirmEmailAsync(user, token);
+
+                    }
+                }
+                else
+                {
+                    await _userManager.AddLoginAsync(user, info);
+                }
+            }
+            if (user == null)
+            {
+                throw new InvalidExternalAuthenticationException("User was not able to be created");
+            }
+
+            await _signInManager.SignInAsync(user, true);
+
+            _logger.LogInformation($"User with Id = {user.Id} was successfully signed in");
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            //var user = await _userManager.GetUserAsync(User);
+
+            await _signInManager.SignOutAsync();
+
+            _logger.LogInformation($"User with Id = {userId} was successfully signed out");
+
+            return Ok();
+
+        }
+    }
+}
