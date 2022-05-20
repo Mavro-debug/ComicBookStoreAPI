@@ -68,15 +68,13 @@ var seeder = scope.ServiceProvider.GetRequiredService<ComicBookSeeder>();
 
 seeder.Seed();
 
-app.UseStaticFiles();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-
+app.UseStaticFiles();
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
 

@@ -6,6 +6,7 @@ namespace ComicBookStoreAPI.Controllers
     [Route("file")]
     public class FileController : ControllerBase
     {
+        [HttpGet]
         [Route("getBaseAvatar")]
         public IActionResult GetBaseAvatar()
         {
