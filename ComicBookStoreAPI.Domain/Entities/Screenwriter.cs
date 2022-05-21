@@ -2,7 +2,7 @@
 
 namespace ComicBookStoreAPI.Domain.Entities
 {
-    public class Screenwriter : IAlikeable<Screenwriter>
+    public class Screenwriter : IAlikeable<Screenwriter>, IEntityWithId
     {
         public int Id { get; set; }
         public string Name { get; set; }

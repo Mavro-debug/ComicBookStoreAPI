@@ -2,7 +2,7 @@
 
 namespace ComicBookStoreAPI.Domain.Entities
 {
-    public class Series : IAlikeable<Series>
+    public class Series : IAlikeable<Series>, IEntityWithId
     {
         public int Id { get; set; }
         public string Name { get; set; }

@@ -1,20 +1,19 @@
-﻿using ComicBookStoreAPI.Domain.Entities;
-using ComicBookStoreAPI.Domain.Exceptions;
+﻿using ComicBookStoreAPI.Domain.Exceptions;
 using ComicBookStoreAPI.Domain.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace ComicBookStoreAPI.Database.Repository
 {
-    public class SeriesRepository : IRepository<Series>
+    public class Repository<T> : IRepository<T> where T : class, IEntityWithId, IAlikeable<T>
     {
         private ApplicationDbContext _dbContext;
-        public SeriesRepository(ApplicationDbContext dbContext)
+        public Repository(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
-
-        private Series? IsAnyAlike(Series entity)
+        private T? IsAnyAlike(T entity)
         {
-            var allEntities = _dbContext.Series;
+            DbSet<T> allEntities = _dbContext.Set<T>();
 
             foreach (var item in allEntities)
             {
@@ -29,11 +28,10 @@ namespace ComicBookStoreAPI.Database.Repository
             return null;
         }
 
-
-        public Series Create(Series entity)
+        public T Create(T entity)
         {
 
-            _dbContext.Series.Add(entity);
+            _dbContext.Add(entity);
 
             bool success = _dbContext.SaveChanges() > 0;
 
@@ -47,9 +45,9 @@ namespace ComicBookStoreAPI.Database.Repository
             }
         }
 
-        public void Delete(Series entity)
+        public void Delete(T entity)
         {
-            _dbContext.Series.Remove(entity);
+            _dbContext.Remove(entity);
 
             bool success = _dbContext.SaveChanges() > 0;
 
@@ -62,7 +60,9 @@ namespace ComicBookStoreAPI.Database.Repository
 
         public void Delete(int entityId)
         {
-            var entity = _dbContext.Series.Where(t => t.Id == entityId).FirstOrDefault();
+            DbSet<T> allEntities = _dbContext.Set<T>();
+
+            var entity = allEntities.Where(t => t.Id == entityId).FirstOrDefault();
 
             if (entity != null)
             {
@@ -70,7 +70,7 @@ namespace ComicBookStoreAPI.Database.Repository
             }
             else
             {
-                throw new DatabaseException($"Data base was not able to find new object of type {typeof(Series)} with id {entityId}");
+                throw new DatabaseException($"Data base was not able to find new object of type {typeof(T)} with id {entityId}");
             }
 
             bool success = _dbContext.SaveChanges() > 0;
@@ -81,14 +81,16 @@ namespace ComicBookStoreAPI.Database.Repository
             }
         }
 
-        public List<Series> GetAll()
+        public List<T> GetAll()
         {
-            return _dbContext.Series.ToList();
+            return _dbContext.Set<T>().ToList();
         }
 
-        public Series GetById(int id)
+        public T GetById(int id)
         {
-            var entity = _dbContext.Series.Where(t => t.Id == id).FirstOrDefault();
+            DbSet<T> allEntities = _dbContext.Set<T>();
+
+            var entity = allEntities.Where(t => t.Id == id).FirstOrDefault();
 
             if (entity != null)
             {
@@ -96,11 +98,11 @@ namespace ComicBookStoreAPI.Database.Repository
             }
             else
             {
-                throw new DatabaseException($"Data base was not able to find new object of type {typeof(Series)} with id {id}");
+                throw new DatabaseException($"Data base was not able to find new object of type {typeof(T)} with id {id}");
             }
         }
 
-        public Series GetOrCreate(Series entity)
+        public T GetOrCreate(T entity)
         {
             var resoultEntity = this.IsAnyAlike(entity);
 
@@ -114,19 +116,19 @@ namespace ComicBookStoreAPI.Database.Repository
             return resoultEntity;
         }
 
-        public List<Series> GetOrCreateRange(List<Series> entities)
+        public List<T> GetOrCreateRange(List<T> entities)
         {
-            List<Series> resoultList = new List<Series>();
+            List<T> resoultList = new List<T>();
 
-            foreach (Series entity in entities)
+            foreach (T entity in entities)
             {
-                var resoultEntity = this.IsAnyAlike(entity); 
+                var resoultEntity = this.IsAnyAlike(entity);
 
                 if (resoultEntity == null)
                 {
-                    var seriesCreated = this.Create(entity);
+                    var translatorCreated = this.Create(entity);
 
-                    resoultList.Add(seriesCreated);
+                    resoultList.Add(translatorCreated);
                 }
                 else
                 {
@@ -138,7 +140,7 @@ namespace ComicBookStoreAPI.Database.Repository
             return resoultList;
         }
 
-        public void Update(Series entity)
+        public void Update(T entity)
         {
             var noChanges = _dbContext.SaveChanges() == 0;
 

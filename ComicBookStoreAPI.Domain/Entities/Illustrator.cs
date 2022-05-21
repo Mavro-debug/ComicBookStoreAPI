@@ -2,7 +2,7 @@
 
 namespace ComicBookStoreAPI.Domain.Entities
 {
-    public class Illustrator : IAlikeable<Illustrator>
+    public class Illustrator : IAlikeable<Illustrator>, IEntityWithId
     {
         public int Id { get; set; }
         public string Name { get; set; }

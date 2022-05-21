@@ -3,7 +3,7 @@
 
 namespace ComicBookStoreAPI.Domain.Entities
 {
-    public class CoverType : IAlikeable<CoverType>
+    public class CoverType : IAlikeable<CoverType>, IEntityWithId
     {
         public int Id { get; set; }
         public string Name { get; set; }

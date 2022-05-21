@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace ComicBookStoreAPI.Domain.Entities
 {
-    public class ComicBook : IAlikeable<ComicBook>
+    public class ComicBook : IAlikeable<ComicBook>, IEntityWithId
     {
         public int Id { get; set; }
         public string Title { get; set; }

@@ -2,7 +2,7 @@
 
 namespace ComicBookStoreAPI.Domain.Entities
 {
-    public class HeroesTeams : IAlikeable<HeroesTeams>
+    public class HeroesTeams : IAlikeable<HeroesTeams>, IEntityWithId
     {
         public int Id { get; set; }
         public string Name { get; set; }
