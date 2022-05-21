@@ -30,15 +30,6 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
 builder.Services.AddScoped<ComicBookSeeder>();
 
-/*builder.Services.AddScoped<IRepository<ComicBook>, ComicBookRepository>();
-builder.Services.AddScoped<IRepository<Screenwriter>, ScreenwriterRepository>();
-builder.Services.AddScoped<IRepository<Translator>, TranslatorRepository>();
-builder.Services.AddScoped<IRepository<Series>, SeriesRepository>();
-builder.Services.AddScoped<IRepository<CoverType>, CoverTypeRepository>();
-builder.Services.AddScoped<IRepository<Illustrator>, IllustratorRepository>();
-builder.Services.AddScoped<IRepository<HeroesTeams>, HeroesTeamsRepository>();
-builder.Services.AddScoped<IRepository<ComicBookIllustrator, ComicBook, Illustrator>, ComicBookIllustratorRepository>();
-builder.Services.AddScoped<IRepository<ComicBookHeroesTeams, ComicBook, HeroesTeams>, ComicBookHeroesTeamsRepository>();*/
 
 builder.Services.AddScoped<IRepository<ComicBook>, Repository<ComicBook>>();
 builder.Services.AddScoped<IRepository<Screenwriter>, Repository<Screenwriter>>();
