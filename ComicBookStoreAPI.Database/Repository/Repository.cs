@@ -1,4 +1,5 @@
-﻿using ComicBookStoreAPI.Domain.Exceptions;
+﻿using ComicBookStoreAPI.Database.Helpers;
+using ComicBookStoreAPI.Domain.Exceptions;
 using ComicBookStoreAPI.Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,22 +11,6 @@ namespace ComicBookStoreAPI.Database.Repository
         public Repository(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
-        }
-        private T? IsAnyAlike(T entity)
-        {
-            DbSet<T> allEntities = _dbContext.Set<T>();
-
-            foreach (var item in allEntities)
-            {
-                var resoult = entity.IsAlik(item);
-
-                if (resoult)
-                {
-                    return item;
-                }
-            }
-
-            return null;
         }
 
         public T Create(T entity)
@@ -104,7 +89,7 @@ namespace ComicBookStoreAPI.Database.Repository
 
         public T GetOrCreate(T entity)
         {
-            var resoultEntity = this.IsAnyAlike(entity);
+            var resoultEntity = EntityHelper.IsAnyAlike(entity, _dbContext);
 
             if (resoultEntity == null)
             {
@@ -122,7 +107,7 @@ namespace ComicBookStoreAPI.Database.Repository
 
             foreach (T entity in entities)
             {
-                var resoultEntity = this.IsAnyAlike(entity);
+                var resoultEntity = EntityHelper.IsAnyAlike(entity, _dbContext);
 
                 if (resoultEntity == null)
                 {

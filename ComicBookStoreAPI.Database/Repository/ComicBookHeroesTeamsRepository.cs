@@ -1,4 +1,5 @@
-﻿using ComicBookStoreAPI.Domain.Entities;
+﻿using ComicBookStoreAPI.Database.Helpers;
+using ComicBookStoreAPI.Domain.Entities;
 using ComicBookStoreAPI.Domain.Exceptions;
 using ComicBookStoreAPI.Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -13,25 +14,6 @@ namespace ComicBookStoreAPI.Database.Repository
             _dbContext = dbContext;
         }
 
-        private ComicBookHeroesTeams? IsAnyAlike(ComicBookHeroesTeams entity)
-        {
-            var allEntities = _dbContext.ComicBooksHeroesTeams
-                .Include(e => e.HeroesTeams)
-                .Include(e => e.ComicBook);
-
-            foreach (var item in allEntities)
-            {
-                var resoult = entity.IsAlik(item);
-
-                if (resoult)
-                {
-                    return item;
-                }
-            }
-
-            return null;
-
-        }
 
 
 
@@ -81,7 +63,7 @@ namespace ComicBookStoreAPI.Database.Repository
 
                 if (checkIfAssigned)
                 {
-                    var assigned = this.IsAnyAlike(entityToBeAdded);
+                    var assigned = EntityHelper.IsAnyAlike(entityToBeAdded, _dbContext);
 
                     if (assigned == null)
                     {
@@ -110,7 +92,7 @@ namespace ComicBookStoreAPI.Database.Repository
 
                 if (checkIfAssigned)
                 {
-                    var assigned = this.IsAnyAlike(entityToBeAdded);
+                    var assigned = EntityHelper.IsAnyAlike(entityToBeAdded, _dbContext);
 
                     if (assigned == null)
                     {
@@ -230,7 +212,7 @@ namespace ComicBookStoreAPI.Database.Repository
         {
             ComicBookHeroesTeams newComicBookHerosTeams = new ComicBookHeroesTeams() { ComicBook = firstEntity, HeroesTeams = secondEntity };
 
-            var entityExists = this.IsAnyAlike(newComicBookHerosTeams);
+            var entityExists = EntityHelper.IsAnyAlike(newComicBookHerosTeams, _dbContext);
 
             if (entityExists != null)
             {
@@ -252,7 +234,7 @@ namespace ComicBookStoreAPI.Database.Repository
         public ComicBookHeroesTeams GetOrCreate(ComicBookHeroesTeams entity)
         {
 
-            var entityExists = this.IsAnyAlike(entity);
+            var entityExists = EntityHelper.IsAnyAlike(entity, _dbContext);
 
             if (entityExists != null)
             {
