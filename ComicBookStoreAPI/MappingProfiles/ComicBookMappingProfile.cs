@@ -20,6 +20,11 @@ namespace ComicBookStoreAPI.MappingProfiles
                 .ForMember(m => m.Year, c => c.MapFrom(s => s.Year))
                 .ForMember(m => m.Month, c => c.MapFrom(s => s.Month))
                 .ForMember(m => m.Day, c => c.MapFrom(s => s.Day));
+
+            CreateMap<Rating, RatingDto>()
+                .ForMember(m => m.Id, c => c.MapFrom(s => s.Id))
+                .ForMember(m => m.Grade, c => c.MapFrom(s => s.Grade))
+                .ForMember(m => m.Commentary, c => c.MapFrom(s => s.Commentary));
         }
     }
 }
