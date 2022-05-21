@@ -19,6 +19,7 @@ namespace ComicBookStoreAPI.Database
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<ComicBookIllustrator> ComicBooksIllustrators { get; set; }
         public DbSet<ComicBookHeroesTeams> ComicBooksHeroesTeams { get; set; }
+        public DbSet<Rating> Rating { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {

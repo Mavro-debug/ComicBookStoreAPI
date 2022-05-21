@@ -21,6 +21,7 @@ namespace ComicBookStoreAPI.Domain.Interfaces.DbContext
         DbSet<Screenwriter> Screenwriters { get; set; }
         DbSet<Series> Series { get; set; }
         DbSet<Translator> Translators { get; set; }
+        public DbSet<Rating> Rating { get; set; }
     }
 }
 
