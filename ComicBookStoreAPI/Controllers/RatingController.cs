@@ -1,4 +1,5 @@
 ﻿using ComicBookStoreAPI.Domain.Interfaces.Services;
+using ComicBookStoreAPI.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ComicBookStoreAPI.Controllers
@@ -6,13 +7,12 @@ namespace ComicBookStoreAPI.Controllers
     [Route("comicBook/{comicBookId}/rating")]
     public class RatingController : ControllerBase
     {
-        private readonly IComicBookRatingBookService _ratingService;
-        public RatingController(IComicBookRatingBookService ratingService)
+        private readonly IRatingService _ratingService;
+        public RatingController(IRatingService ratingService)
         {
             _ratingService = ratingService;
         }
         [HttpGet]
-        [Route("getAll")]
         public IActionResult GetAll([FromRoute] int comicBookId)
         {
             var rating = _ratingService.GetAll(comicBookId);
@@ -20,8 +20,7 @@ namespace ComicBookStoreAPI.Controllers
             return Ok(rating);
         }
 
-        [HttpGet]
-        [Route("getAll/{id}")]
+        [HttpGet("{id}")]
         public IActionResult Get([FromRoute] int comicBookId, [FromRoute] int id)
         {
             var rating = _ratingService.GetById(comicBookId, id);
@@ -29,5 +28,11 @@ namespace ComicBookStoreAPI.Controllers
             return Ok(rating);
         }
 
+
+        [HttpPost]
+        public IActionResult Create([FromRoute] int comicBookId, [FromBody] RatingDto ratingDto)
+        {
+
+        }
     }
 }
