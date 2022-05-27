@@ -11,14 +11,14 @@ namespace ComicBookStoreAPI.Services
 {
     public class RatingService : IRatingService
     {
-        private readonly IRepository<ComicBook> _comicBookRepository;
+        private readonly IRepository<Rating> _ratingRepo;
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public RatingService(IRepository<ComicBook> comicBookRepository, IApplicationDbContext dbContext,
+        public RatingService(IRepository<Rating> ratingRepo, IApplicationDbContext dbContext,
             IMapper mapper)
         {
-            _comicBookRepository = comicBookRepository;
+            _ratingRepo = ratingRepo;
             _dbContext = dbContext;
             _mapper = mapper;
         }
@@ -58,6 +58,26 @@ namespace ComicBookStoreAPI.Services
             var ratingDto = _mapper.Map<RatingDto>(ratings);
 
             return ratingDto;
+        }
+
+        public int Create(int comicBookId, ApplicationUser user, RatingDto ratingDto)
+        {
+            Rating rating = _mapper.Map<Rating>(ratingDto);
+
+            var comicBook = _dbContext.ComicBooks.FirstOrDefault(x => x.Id == comicBookId);
+
+            if (comicBook == null)
+            {
+                throw new DatabaseException($"ComicBook entity with Id {comicBookId} could not be found");
+            }
+
+            rating.ComicBook = comicBook;
+
+            rating.User = user;
+
+            _ratingRepo.Create(rating);
+
+            return rating.Id;
         }
     }
 }
