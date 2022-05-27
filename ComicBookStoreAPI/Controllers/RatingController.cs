@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace ComicBookStoreAPI.Controllers
 {
     [Route("comicBook/{comicBookId}/rating")]
-    public class ComicBookRatingService : ControllerBase
+    public class RatingController : ControllerBase
     {
         private readonly IComicBookRatingBookService _ratingService;
-        public ComicBookRatingService(IComicBookRatingBookService ratingService)
+        public RatingController(IComicBookRatingBookService ratingService)
         {
             _ratingService = ratingService;
         }
