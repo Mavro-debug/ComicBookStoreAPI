@@ -9,13 +9,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ComicBookStoreAPI.Services
 {
-    public class ComicBookRatingService : IComicBookRatingBookService
+    public class RatingService : IComicBookRatingBookService
     {
         private readonly IRepository<ComicBook> _comicBookRepository;
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public ComicBookRatingService(IRepository<ComicBook> comicBookRepository, IApplicationDbContext dbContext,
+        public RatingService(IRepository<ComicBook> comicBookRepository, IApplicationDbContext dbContext,
             IMapper mapper)
         {
             _comicBookRepository = comicBookRepository;
