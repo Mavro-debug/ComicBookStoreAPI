@@ -43,5 +43,12 @@ namespace ComicBookStoreAPI.Controllers
 
             return Created($"/comicBook/{comicBookId}/rating/{createdRatingId}", null);
         }
+
+        [Authorize]
+        [HttpPut]
+        public async Task<IActionResult> Change([FromRoute] int comicBookId, [FromBody] RatingDto ratingDto)
+        {
+
+        }
     }
 }
