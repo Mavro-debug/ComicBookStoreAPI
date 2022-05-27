@@ -15,7 +15,7 @@ namespace ComicBookStoreAPI.Domain.Interfaces.Repositories
         T Create(T entity);
         void Delete(T entity);
         void Delete(int entityId);
-        void Update(T entity);
+        void Update(int id, T entity)
     }
 
     public interface IRepository<T, F, S> where T : IAlikeable<T>

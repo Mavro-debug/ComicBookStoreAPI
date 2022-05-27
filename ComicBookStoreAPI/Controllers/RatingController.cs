@@ -45,10 +45,12 @@ namespace ComicBookStoreAPI.Controllers
         }
 
         [Authorize]
-        [HttpPut]
-        public async Task<IActionResult> Change([FromRoute] int comicBookId, [FromBody] RatingDto ratingDto)
+        [HttpPut("{id}")]
+        public IActionResult Change([FromRoute] int id, [FromBody] RatingDto ratingDto)
         {
+            _ratingService.Change(id, ratingDto);
 
+            return Ok();
         }
     }
 }

@@ -125,14 +125,30 @@ namespace ComicBookStoreAPI.Database.Repository
             return resoultList;
         }
 
-        public void Update(T entity)
+        public void Update(int id, T entity)
         {
-            var noChanges = _dbContext.SaveChanges() == 0;
+            DbSet<T> allEntities = _dbContext.Set<T>();
 
-            if (noChanges)
+            var entityToUpdate = allEntities.FirstOrDefault(x => x.Id == id);
+
+            if (entityToUpdate == null)
             {
-                throw new DatabaseException($"An attempt to update entity type: {entity.GetType()} with Id: {entity.Id} without making changes.");
+                throw new DatabaseException($"Entity of type {entity.GetType()} and Id: {id} could not be found");
             }
+
+            var entiType = entity.GetType();
+
+            var entityTypePropsInfo = entiType.GetProperties();
+
+            foreach (var propInfo in entityTypePropsInfo)
+            {
+                if (propInfo.GetValue(entity) != null && propInfo.Name != "Id")
+                {
+                    propInfo.SetValue(entityToUpdate, propInfo.GetValue(entity));
+                }
+            }
+
+            _dbContext.SaveChanges();
         }
     }
 }

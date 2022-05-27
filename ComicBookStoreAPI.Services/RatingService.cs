@@ -79,5 +79,14 @@ namespace ComicBookStoreAPI.Services
 
             return rating.Id;
         }
+
+        public void Change(int ratingId, RatingDto ratingDto)
+        {
+            var rating = _mapper.Map<Rating>(ratingDto);
+
+            _ratingRepo.Update(ratingId, rating);
+            
+        }
+
     }
 }
