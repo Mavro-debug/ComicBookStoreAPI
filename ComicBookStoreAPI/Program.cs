@@ -1,5 +1,6 @@
 using ComicBookStoreAPI.Database;
 using ComicBookStoreAPI.Database.Helpers;
+using ComicBookStoreAPI.Database.Managers;
 using ComicBookStoreAPI.Database.Repository;
 using ComicBookStoreAPI.Database.Seeders;
 using ComicBookStoreAPI.Domain.Entities;
@@ -35,20 +36,14 @@ builder.Services.AddScoped<ComicBookSeeder>();
 
 builder.Services.AddScoped<IEntityHelper, EntityHelper>();
 
-builder.Services.AddScoped<IRepository<ComicBook>, Repository<ComicBook>>();
-builder.Services.AddScoped<IRepository<Screenwriter>, Repository<Screenwriter>>();
-builder.Services.AddScoped<IRepository<Translator>, Repository<Translator>>();
-builder.Services.AddScoped<IRepository<Series>, Repository<Series>>();
-builder.Services.AddScoped<IRepository<CoverType>, Repository<CoverType>>();
-builder.Services.AddScoped<IRepository<Illustrator>, Repository<Illustrator>>();
-builder.Services.AddScoped<IRepository<HeroesTeams>, Repository<HeroesTeams>>();
+
 builder.Services.AddScoped<IRepository<ComicBookIllustrator, ComicBook, Illustrator>, ComicBookIllustratorRepository>();
 builder.Services.AddScoped<IRepository<ComicBookHeroesTeams, ComicBook, HeroesTeams>, ComicBookHeroesTeamsRepository>();
 
 
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
-builder.Services.AddScoped<IComicBooksService, ComicBooksService>();
+builder.Services.AddScoped<IComicBookManagers, ComicBookManagers>();
 
 builder.Services.AddAuthentication()
     .AddGoogle(opt =>

@@ -3,13 +3,14 @@ using ComicBookStoreAPI.Domain.Entities;
 using ComicBookStoreAPI.Domain.Exceptions;
 using ComicBookStoreAPI.Domain.Interfaces.Helpers;
 using ComicBookStoreAPI.Domain.Interfaces.Repositories;
+using ComicBookStoreAPI.Domain.Interfaces.Services;
 using ComicBookStoreAPI.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 
 namespace ComicBookStoreAPI.Database.Managers
 {
-    public class ComicBookManagers
+    public class ComicBookManagers : IComicBookManagers
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;

@@ -3,11 +3,10 @@
 
 namespace ComicBookStoreAPI.Domain.Interfaces.Services
 {
-    public interface IComicBooksService
+    public interface IComicBookManagers
     {
         IEnumerable<ComicBookCardDto> GetAllCards();
         IEnumerable<ComicBookCardDto> GetAllSearchedCards(string searchedPhrase);
-        ComicBookDescFeatDto GetAllComicBookDescFeats();
         int CreateComicBook(NewComicBookDto newComicBook);
         void RemoveComicBook(int id);
         void UpdateComicBook(int comicBookId, NewComicBookDto newComicBook);
