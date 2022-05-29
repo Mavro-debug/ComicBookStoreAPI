@@ -26,57 +26,6 @@ namespace ComicBookStoreAPI.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        [Route("getCurrentUser")]
-        public async Task<IActionResult> GetCurrentUser()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return Unauthorized();
-            }
-
-            return Ok(user);
-        }
-
-        [HttpGet]
-        [Route("getCurrentUserCard")]
-        public async Task<IActionResult> GetCurrentUserCard()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            if (user == null)
-            {
-                return Unauthorized();
-            }
-
-            UserCardDto userCard = new UserCardDto()
-            {
-                UserName = user.UserName,
-                AvatarPictureName = user.AvatarPictureName
-            };
-
-            return Ok(userCard);
-        }
-
-        [HttpGet]
-        [Route("getUserLoginStatus")]
-        public async Task<IActionResult> GetuserLoginStatus()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            var loginStatus = new IsLoggedDto();
-            if (user == null)
-            {
-                loginStatus.Status = false;
-                return Ok(loginStatus);
-            }
-            loginStatus.Status = true;
-            return Ok(loginStatus);
-        }
-
-
-
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterDto registerDto)
