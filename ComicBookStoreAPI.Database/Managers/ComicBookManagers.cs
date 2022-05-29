@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ComicBookStoreAPI.Database.Managers
 {
-    public class ComicBookManagers : IComicBookManagers
+    public class ComicBookManager : IComicBookManager
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IEntityHelper _entityHelper;
         private readonly IRepository<ComicBookIllustrator, ComicBook, Illustrator> _comicBookIllustratorRepo;
         private readonly IRepository<ComicBookHeroesTeams, ComicBook, HeroesTeams> _comicBookHeroesTeamsRepo;
-        public ComicBookManagers(ApplicationDbContext dbContext, IMapper mapper,
+        public ComicBookManager(ApplicationDbContext dbContext, IMapper mapper,
             IEntityHelper entityHelper,
             IRepository<ComicBookIllustrator, ComicBook, Illustrator> comicBookIllustratorRepo,
             IRepository<ComicBookHeroesTeams, ComicBook, HeroesTeams> comicBookHeroesTeamsRepo)

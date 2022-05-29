@@ -8,63 +8,44 @@ namespace ComicBookStoreAPI.Controllers
     [Route("comicBooks")]
     public class ComicBooksController : ControllerBase
     {
-        private readonly IComicBooksService _comicBooksService;
+        private readonly IComicBookManager _comicBooksManager;
 
-        public ComicBooksController(IComicBooksService comicBooksService)
+        public ComicBooksController(IComicBookManager comicBooksManager)
         {
-            _comicBooksService = comicBooksService;
+            _comicBooksManager = comicBooksManager;
         }
 
+
+
         [HttpGet]
-        [Route("getAllCards")]
-        public IActionResult GetAllCards()
+        public IActionResult GetAll([FromQuery] string searchedPhrase)
         {
-            var cards = _comicBooksService.GetAllCards();
+            var cards = _comicBooksManager.GetAllSearchedCards(searchedPhrase);
 
             return Ok(cards);
         }
 
-        [HttpGet]
-        [Route("getAllSearchedCards")]
-        public IActionResult GetAllSearchedCards([FromQuery] string searchedPhrase)
-        {
-            var cards = _comicBooksService.GetAllSearchedCards(searchedPhrase);
-
-            return Ok(cards);
-        }
-
-        [HttpGet]
-        [Route("getComicBookDescFeats")]
-        public IActionResult GetComicBookDescFeats()
-        {
-            ComicBookDescFeatDto descFeat = _comicBooksService.GetAllComicBookDescFeats();
-
-            return Ok(descFeat);
-        }
 
         [HttpPost]
-        [Route("addComicBook")]
         public IActionResult AddComicBook([FromBody] NewComicBookDto newComicBookDto)
         {
-            int newComicBookId = _comicBooksService.CreateComicBook(newComicBookDto);
+            int newComicBookId = _comicBooksManager.CreateComicBook(newComicBookDto);
 
             return Ok(newComicBookId);
         }
 
-        [HttpDelete]
-        [Route("removeComicBook/{id}")]
+        [HttpDelete("{id}")]
         public IActionResult RemoveComicBook([FromRoute] int id)
         {
-            _comicBooksService.RemoveComicBook(id);
+            _comicBooksManager.RemoveComicBook(id);
 
             return NotFound();
         }
 
-        [HttpPatch]
-        [Route("updateComicBook/{id}")]
+        [HttpPatch("{id}")]
         public IActionResult UpdateComicBook([FromRoute] int id, [FromBody] NewComicBookDto newComicBookDto)
         {
-            _comicBooksService.UpdateComicBook(id, newComicBookDto);
+            _comicBooksManager.UpdateComicBook(id, newComicBookDto);
 
             return Ok();
         }

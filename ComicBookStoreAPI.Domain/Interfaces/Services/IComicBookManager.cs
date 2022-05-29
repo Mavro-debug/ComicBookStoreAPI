@@ -3,7 +3,7 @@
 
 namespace ComicBookStoreAPI.Domain.Interfaces.Services
 {
-    public interface IComicBookManagers
+    public interface IComicBookManager
     {
         IEnumerable<ComicBookCardDto> GetAllCards();
         IEnumerable<ComicBookCardDto> GetAllSearchedCards(string searchedPhrase);

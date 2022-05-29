@@ -43,7 +43,7 @@ builder.Services.AddScoped<IRepository<ComicBookHeroesTeams, ComicBook, HeroesTe
 
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
-builder.Services.AddScoped<IComicBookManagers, ComicBookManagers>();
+builder.Services.AddScoped<IComicBookManager, ComicBookManager>();
 
 builder.Services.AddAuthentication()
     .AddGoogle(opt =>
