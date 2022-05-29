@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ComicBookStoreAPI.Controllers
 {
+    [Route("user")]
     public class UserController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -14,7 +15,6 @@ namespace ComicBookStoreAPI.Controllers
         }
 
         [HttpGet]
-        [Route("getCurrentUser")]
         public async Task<IActionResult> GetCurrentUser()
         {
             var user = await _userManager.GetUserAsync(User);
