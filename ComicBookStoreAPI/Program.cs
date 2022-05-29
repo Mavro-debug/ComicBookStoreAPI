@@ -1,8 +1,10 @@
 using ComicBookStoreAPI.Database;
+using ComicBookStoreAPI.Database.Helpers;
 using ComicBookStoreAPI.Database.Repository;
 using ComicBookStoreAPI.Database.Seeders;
 using ComicBookStoreAPI.Domain.Entities;
 using ComicBookStoreAPI.Domain.Interfaces.DbContext;
+using ComicBookStoreAPI.Domain.Interfaces.Helpers;
 using ComicBookStoreAPI.Domain.Interfaces.Repositories;
 using ComicBookStoreAPI.Domain.Interfaces.Services;
 using ComicBookStoreAPI.Middleware;
@@ -30,6 +32,8 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
 builder.Services.AddScoped<ComicBookSeeder>();
 
+
+builder.Services.AddScoped<IEntityHelper, EntityHelper>();
 
 builder.Services.AddScoped<IRepository<ComicBook>, Repository<ComicBook>>();
 builder.Services.AddScoped<IRepository<Screenwriter>, Repository<Screenwriter>>();

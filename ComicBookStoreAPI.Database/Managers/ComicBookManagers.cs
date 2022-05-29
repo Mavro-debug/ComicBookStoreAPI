@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using ComicBookStoreAPI.Domain.Entities;
+using ComicBookStoreAPI.Domain.Exceptions;
+using ComicBookStoreAPI.Domain.Interfaces.Helpers;
+using ComicBookStoreAPI.Domain.Interfaces.Repositories;
 using ComicBookStoreAPI.Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ComicBookStoreAPI.Database.Managers
 {
@@ -14,11 +13,19 @@ namespace ComicBookStoreAPI.Database.Managers
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
-
-        public ComicBookManagers(ApplicationDbContext dbContext, IMapper mapper)
+        private readonly IEntityHelper _entityHelper;
+        private readonly IRepository<ComicBookIllustrator, ComicBook, Illustrator> _comicBookIllustratorRepo;
+        private readonly IRepository<ComicBookHeroesTeams, ComicBook, HeroesTeams> _comicBookHeroesTeamsRepo;
+        public ComicBookManagers(ApplicationDbContext dbContext, IMapper mapper,
+            IEntityHelper entityHelper,
+            IRepository<ComicBookIllustrator, ComicBook, Illustrator> comicBookIllustratorRepo,
+            IRepository<ComicBookHeroesTeams, ComicBook, HeroesTeams> comicBookHeroesTeamsRepo)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _entityHelper = entityHelper;
+            _comicBookIllustratorRepo = comicBookIllustratorRepo;
+            _comicBookHeroesTeamsRepo = comicBookHeroesTeamsRepo;
         }
 
 
@@ -117,18 +124,32 @@ namespace ComicBookStoreAPI.Database.Managers
                 NumberOfPages = newComicBook.NumberOfPages,
                 Discount = newComicBook.Discount,
                 Description = newComicBook.Description,
-                Screenwriter = _screenwriterRepo.GetOrCreate(new Screenwriter() { Name = newComicBook.Screenriter }),
-                Translator = _translatorRepo.GetOrCreate(new Translator() { Name = newComicBook.Translator }),
-                Series = _seriesRepo.GetOrCreate(new Series() { Name = newComicBook.Series }),
-                CoverType = _coverTypeRepo.GetOrCreate(new CoverType() { Name = newComicBook.CoverType }),
+                Screenwriter = _entityHelper.GetFirstOrDefaultAlike(new Screenwriter() { Name = newComicBook.Screenriter }) ?? 
+                    new Screenwriter() { Name = newComicBook.Screenriter },
+
+                Translator = _entityHelper.GetFirstOrDefaultAlike(new Translator() { Name = newComicBook.Translator }) ??
+                    new Translator() { Name = newComicBook.Translator },
+
+                Series = _entityHelper.GetFirstOrDefaultAlike(new Series() { Name = newComicBook.Series }) ??
+                    new Series() { Name = newComicBook.Series },
+
+                CoverType = _entityHelper.GetFirstOrDefaultAlike(new CoverType() { Name = newComicBook.CoverType }) ??
+                    new CoverType() { Name = newComicBook.CoverType },
 
             };
+
 
             newComicBookEntity.ComicBookIllustrators = _comicBookIllustratorRepo.AssignRange(newComicBookEntity, newIllustratorsRange);
             newComicBookEntity.ComicBookHeroesTeams = _comicBookHeroesTeamsRepo.AssignRange(newComicBookEntity, newHerosTeamsRange);
 
-            _comicBookRepository.Create(newComicBookEntity);
+            _dbContext.Add(newComicBookEntity);
 
+            bool resoul = _dbContext.SaveChanges() > 0;
+
+            if (resoul == false)
+            {
+                throw new DatabaseException($"New ComicBook entity was added but no changes occured");
+            }
 
             return newComicBookEntity.Id;
 
@@ -136,15 +157,27 @@ namespace ComicBookStoreAPI.Database.Managers
 
         public void RemoveComicBook(int id)
         {
-            var comicBook = _comicBookRepository.GetById(id);
+            var comicBook = _dbContext.ComicBooks.FirstOrDefault(x => x.Id == id);
 
-            _comicBookRepository.Delete(comicBook);
+            if (comicBook == null)
+            {
+                throw new DatabaseException($"ComicBook entity with Id: {id} could not be found");
+            }
+
+            _dbContext.Remove(comicBook);
+
+            bool resoul = _dbContext.SaveChanges() > 0;
+
+            if (resoul == false)
+            {
+                throw new DatabaseException($"ComicBook entity was removed but no changes occured");
+            }
 
         }
 
         public void UpdateComicBook(int comicBookId, NewComicBookDto newComicBookDto)
         {
-            var comicBook = _comicBookRepository.GetById(comicBookId);
+            var comicBook = _dbContext.ComicBooks.FirstOrDefault(x => x.Id == comicBookId);
 
             if (comicBook == null)
             {
@@ -156,10 +189,18 @@ namespace ComicBookStoreAPI.Database.Managers
             comicBook.Edition = newComicBookDto.Edytion;
             comicBook.ReleaseDate = _mapper.Map<DateTime>(newComicBookDto.ReleaseDate);
             comicBook.NumberOfPages = newComicBookDto.NumberOfPages;
-            comicBook.Screenwriter = _screenwriterRepo.GetOrCreate(new Screenwriter() { Name = newComicBookDto.Screenriter });
-            comicBook.Translator = _translatorRepo.GetOrCreate(new Translator() { Name = newComicBookDto.Translator });
-            comicBook.Series = _seriesRepo.GetOrCreate(new Series() { Name = newComicBookDto.Series });
-            comicBook.CoverType = _coverTypeRepo.GetOrCreate(new CoverType() { Name = newComicBookDto.CoverType });
+
+            comicBook.Screenwriter = _entityHelper.GetFirstOrDefaultAlike(new Screenwriter() { Name = newComicBookDto.Screenriter }) ??
+                    new Screenwriter() { Name = newComicBookDto.Screenriter };
+
+            comicBook.Translator = _entityHelper.GetFirstOrDefaultAlike(new Translator() { Name = newComicBookDto.Translator }) ??
+                    new Translator() { Name = newComicBookDto.Translator };
+
+            comicBook.Series = _entityHelper.GetFirstOrDefaultAlike(new Series() { Name = newComicBookDto.Series }) ??
+                    new Series() { Name = newComicBookDto.Series };
+
+            comicBook.CoverType = _entityHelper.GetFirstOrDefaultAlike(new CoverType() { Name = newComicBookDto.CoverType }) ??
+                    new CoverType() { Name = newComicBookDto.CoverType };
 
 
             var newIllustratorsRange = new List<Illustrator>();
@@ -183,7 +224,7 @@ namespace ComicBookStoreAPI.Database.Managers
             _comicBookHeroesTeamsRepo.DeleteOutsideRange(newHerosTeamsRange, _dbContext.ComicBooks.Where(c => c.Id == comicBookId).Single());
 
 
-            //_comicBookRepository.Update(comicBook);
+            _dbContext.SaveChanges();
 
 
         }

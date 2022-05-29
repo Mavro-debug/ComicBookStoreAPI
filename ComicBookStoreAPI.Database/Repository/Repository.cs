@@ -1,5 +1,6 @@
 ﻿using ComicBookStoreAPI.Database.Helpers;
 using ComicBookStoreAPI.Domain.Exceptions;
+using ComicBookStoreAPI.Domain.Interfaces.Helpers;
 using ComicBookStoreAPI.Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,9 +9,11 @@ namespace ComicBookStoreAPI.Database.Repository
     public class Repository<T> : IRepository<T> where T : class, IEntityWithId, IAlikeable<T>
     {
         private ApplicationDbContext _dbContext;
-        public Repository(ApplicationDbContext dbContext)
+        private readonly IEntityHelper _entityHelper;
+        public Repository(ApplicationDbContext dbContext, IEntityHelper entityHelper)
         {
             _dbContext = dbContext;
+            _entityHelper = entityHelper;
         }
 
         public T Create(T entity)
@@ -89,7 +92,7 @@ namespace ComicBookStoreAPI.Database.Repository
 
         public T GetOrCreate(T entity)
         {
-            var resoultEntity = EntityHelper.IsAnyAlike(entity, _dbContext);
+            var resoultEntity = _entityHelper.GetFirstOrDefaultAlike(entity);
 
             if (resoultEntity == null)
             {
@@ -107,7 +110,7 @@ namespace ComicBookStoreAPI.Database.Repository
 
             foreach (T entity in entities)
             {
-                var resoultEntity = EntityHelper.IsAnyAlike(entity, _dbContext);
+                var resoultEntity = _entityHelper.GetFirstOrDefaultAlike(entity);
 
                 if (resoultEntity == null)
                 {

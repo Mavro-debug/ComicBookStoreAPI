@@ -1,6 +1,7 @@
 ﻿using ComicBookStoreAPI.Database.Helpers;
 using ComicBookStoreAPI.Domain.Entities;
 using ComicBookStoreAPI.Domain.Exceptions;
+using ComicBookStoreAPI.Domain.Interfaces.Helpers;
 using ComicBookStoreAPI.Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,9 +10,11 @@ namespace ComicBookStoreAPI.Database.Repository
     public class ComicBookIllustratorRepository : IRepository<ComicBookIllustrator, ComicBook, Illustrator>
     {
         private ApplicationDbContext _dbContext;
-        public ComicBookIllustratorRepository(ApplicationDbContext dbContext)
+        private readonly IEntityHelper _entityHelper;
+        public ComicBookIllustratorRepository(ApplicationDbContext dbContext, IEntityHelper entityHelper)
         {
             _dbContext = dbContext;
+            _entityHelper = entityHelper;
         }
 
 
@@ -62,7 +65,7 @@ namespace ComicBookStoreAPI.Database.Repository
 
                 if (checkIfAssigned)
                 {
-                    var assigned = EntityHelper.IsAnyAlike(entityToBeAdded, _dbContext);
+                    var assigned = _entityHelper.GetFirstOrDefaultAlike(entityToBeAdded);
 
                     if (assigned == null)
                     {
@@ -91,7 +94,7 @@ namespace ComicBookStoreAPI.Database.Repository
 
                 if (checkIfAssigned)
                 {
-                    var assigned = EntityHelper.IsAnyAlike(entityToBeAdded, _dbContext);
+                    var assigned = _entityHelper.GetFirstOrDefaultAlike(entityToBeAdded);
 
                     if (assigned == null)
                     {
@@ -214,7 +217,7 @@ namespace ComicBookStoreAPI.Database.Repository
         {
             ComicBookIllustrator newComicBookIllustrator = new ComicBookIllustrator() { ComicBook = firstEntity, Illustrator = secondEntity };
 
-            var entityExists = EntityHelper.IsAnyAlike(newComicBookIllustrator, _dbContext);
+            var entityExists = _entityHelper.GetFirstOrDefaultAlike(newComicBookIllustrator);
 
             if (entityExists != null)
             {
@@ -236,7 +239,7 @@ namespace ComicBookStoreAPI.Database.Repository
         public ComicBookIllustrator GetOrCreate(ComicBookIllustrator entity)
         {
 
-            var entityExists = EntityHelper.IsAnyAlike(entity, _dbContext);
+            var entityExists = _entityHelper.GetFirstOrDefaultAlike(entity);
 
             if (entityExists != null)
             {
