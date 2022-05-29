@@ -61,7 +61,7 @@ namespace ComicBookStoreAPI.Database.Managers
             return ratingDto;
         }
 
-        public int Create(int comicBookId, ApplicationUser user, RatingDto ratingDto)
+        public int Create(int comicBookId, ApplicationUser user, CreateRatingDto ratingDto)
         {
             Rating rating = _mapper.Map<Rating>(ratingDto);
 
@@ -81,14 +81,29 @@ namespace ComicBookStoreAPI.Database.Managers
             return rating.Id;
         }
 
-        public void Change(int ratingId, RatingDto ratingDto)
+        public int Change(int comicBookId, ApplicationUser user, CreateRatingDto ratingDto)
         {
-            var rating = _mapper.Map<Rating>(ratingDto);
+            var comicBook = _dbContext.ComicBooks.FirstOrDefault(x => x.Id == comicBookId);
 
-            //var authorizationResoult = _authorizationService.AuthorizeAsync()
+            if (comicBook == null)
+            {
+                throw new DatabaseException($"ComicBook entity with Id {comicBookId} could not be found");
+            }
 
-            //_ratingRepo.Update(ratingId, rating);
-            
+            var rating = comicBook.Ratings.FirstOrDefault(x => x.User.Id == user.Id);
+
+            if (rating == null)
+            {
+                throw new DatabaseException($"Rating entity with ComicBook Id: {comicBookId} and User Id: {user.Id} could not be found");
+            }
+
+            rating.Commentary = ratingDto.Commentary;
+
+            rating.Grade = ratingDto.Grade;
+
+            _dbContext.SaveChanges();
+
+            return rating.Id;
         }
 
     }

@@ -35,7 +35,7 @@ namespace ComicBookStoreAPI.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Create([FromRoute] int comicBookId, [FromBody] RatingDto ratingDto)
+        public async Task<IActionResult> Create([FromRoute] int comicBookId, [FromBody] CreateRatingDto ratingDto)
         {
             var user = await _userManager.GetUserAsync(User);
 
@@ -45,10 +45,12 @@ namespace ComicBookStoreAPI.Controllers
         }
 
         [Authorize]
-        [HttpPut("{id}")]
-        public IActionResult Change([FromRoute] int id, [FromBody] RatingDto ratingDto)
+        [HttpPut]
+        public async Task<IActionResult> Change([FromRoute] int comicBookId, [FromBody] CreateRatingDto ratingDto)
         {
-            _ratingManager.Change(id, ratingDto);
+            var user = await _userManager.GetUserAsync(User);
+
+            _ratingManager.Change(comicBookId, user, ratingDto);
 
             return Ok();
         }

@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using ComicBookStoreAPI.Domain.Entities;
 using ComicBookStoreAPI.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ComicBookStoreAPI.Controllers
 {
+    [Authorize]
     [Route("user")]
     public class UserController : ControllerBase
     {
