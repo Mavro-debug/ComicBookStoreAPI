@@ -10,17 +10,17 @@ namespace ComicBookStoreAPI.Controllers
     [Route("comicBook/{comicBookId}/rating")]
     public class RatingController : ControllerBase
     {
-        private readonly IRatingService _ratingService;
+        private readonly IRatingManager _ratingManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        public RatingController(IRatingService ratingService, UserManager<ApplicationUser> userManager)
+        public RatingController(IRatingManager ratingManager, UserManager<ApplicationUser> userManager)
         {
-            _ratingService = ratingService;
+            _ratingManager = ratingManager;
             _userManager = userManager;
         }
         [HttpGet]
         public IActionResult GetAll([FromRoute] int comicBookId)
         {
-            var rating = _ratingService.GetAll(comicBookId);
+            var rating = _ratingManager.GetAll(comicBookId);
 
             return Ok(rating);
         }
@@ -28,7 +28,7 @@ namespace ComicBookStoreAPI.Controllers
         [HttpGet("{id}")]
         public IActionResult Get([FromRoute] int comicBookId, [FromRoute] int id)
         {
-            var rating = _ratingService.GetById(comicBookId, id);
+            var rating = _ratingManager.GetById(comicBookId, id);
 
             return Ok(rating);
         }
@@ -39,7 +39,7 @@ namespace ComicBookStoreAPI.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
 
-            int createdRatingId = _ratingService.Create(comicBookId, user, ratingDto);
+            int createdRatingId = _ratingManager.Create(comicBookId, user, ratingDto);
 
             return Created($"/comicBook/{comicBookId}/rating/{createdRatingId}", null);
         }
@@ -48,7 +48,7 @@ namespace ComicBookStoreAPI.Controllers
         [HttpPut("{id}")]
         public IActionResult Change([FromRoute] int id, [FromBody] RatingDto ratingDto)
         {
-            _ratingService.Change(id, ratingDto);
+            _ratingManager.Change(id, ratingDto);
 
             return Ok();
         }

@@ -44,6 +44,7 @@ builder.Services.AddScoped<IRepository<ComicBookHeroesTeams, ComicBook, HeroesTe
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddScoped<IComicBookManager, ComicBookManager>();
+builder.Services.AddScoped<IRatingManager, RatingManager>();
 
 builder.Services.AddAuthentication()
     .AddGoogle(opt =>

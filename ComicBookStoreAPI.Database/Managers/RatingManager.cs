@@ -1,27 +1,24 @@
 ﻿using AutoMapper;
+using ComicBookStoreAPI.Database;
 using ComicBookStoreAPI.Domain.Entities;
 using ComicBookStoreAPI.Domain.Exceptions;
-using ComicBookStoreAPI.Domain.Interfaces.DbContext;
 using ComicBookStoreAPI.Domain.Interfaces.Helpers;
-using ComicBookStoreAPI.Domain.Interfaces.Repositories;
 using ComicBookStoreAPI.Domain.Interfaces.Services;
 using ComicBookStoreAPI.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
-namespace ComicBookStoreAPI.Services
+namespace ComicBookStoreAPI.Database.Managers
 {
-    public class RatingService : IRatingService
+    public class RatingManager : IRatingManager
     {
-        private readonly IEntityHelper _entityHelper;
-        private readonly IApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IAuthorizationService _authorizationService;
 
-        public RatingService(IEntityHelper entityHelper, IApplicationDbContext dbContext,
+        public RatingManager( ApplicationDbContext dbContext,
             IMapper mapper, IAuthorizationService authorizationService)
         {
-            _entityHelper = entityHelper;
             _dbContext = dbContext;
             _mapper = mapper;
             _authorizationService = authorizationService;
@@ -79,7 +76,7 @@ namespace ComicBookStoreAPI.Services
 
             rating.User = user;
 
-            _ratingRepo.Create(rating);
+            _dbContext.Add(rating);
 
             return rating.Id;
         }
@@ -90,7 +87,7 @@ namespace ComicBookStoreAPI.Services
 
             //var authorizationResoult = _authorizationService.AuthorizeAsync()
 
-            _ratingRepo.Update(ratingId, rating);
+            //_ratingRepo.Update(ratingId, rating);
             
         }
 
