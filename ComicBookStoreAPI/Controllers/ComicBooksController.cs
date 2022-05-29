@@ -20,9 +20,17 @@ namespace ComicBookStoreAPI.Controllers
         [HttpGet]
         public IActionResult GetAll([FromQuery] string searchedPhrase)
         {
-            var cards = _comicBooksManager.GetAllSearchedCards(searchedPhrase);
+            var comicBookDtos = _comicBooksManager.GetAll(searchedPhrase);
 
-            return Ok(cards);
+            return Ok(comicBookDtos);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetById([FromRoute] int id)
+        {
+            var comicBookDtos = _comicBooksManager.GetById(id);
+
+            return Ok(comicBookDtos);
         }
 
 

@@ -8,11 +8,11 @@ namespace ComicBookStoreAPI.Database.Seeders
     public class ComicBookSeeder
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly IComicBooksService _comicBooksService;
-        public ComicBookSeeder(ApplicationDbContext dbContext, IComicBooksService comicBooksService)
+        private readonly IComicBookManager _comicBooksManager;
+        public ComicBookSeeder(ApplicationDbContext dbContext, IComicBookManager comicBooksManager)
         {
             this._dbContext = dbContext;
-            _comicBooksService = comicBooksService;
+            _comicBooksManager = comicBooksManager;
         }
 
         public void Seed()
@@ -42,7 +42,7 @@ namespace ComicBookStoreAPI.Database.Seeders
                         HeroesTeams = new List<string>() { "The Flash" }
                     };
 
-                    _comicBooksService.CreateComicBook(newComicBook);
+                    _comicBooksManager.CreateComicBook(newComicBook);
 
                     var comic = _dbContext.ComicBooks.Where(x => x.Title == "Flash. Era Flasha. Tom 14").FirstOrDefault();
                     comic.Posters = new List<Poster>()
@@ -75,7 +75,7 @@ namespace ComicBookStoreAPI.Database.Seeders
                         HeroesTeams = new List<string>() { "Superman" }
                     };
 
-                    _comicBooksService.CreateComicBook(newComicBook2);
+                    _comicBooksManager.CreateComicBook(newComicBook2);
 
                     var comic2 = _dbContext.ComicBooks.Where(x => x.Title == "Superman – Prawda ujawniona. Tom 3").FirstOrDefault();
                     comic2.Posters = new List<Poster>()

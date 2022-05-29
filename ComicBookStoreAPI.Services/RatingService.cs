@@ -2,6 +2,7 @@
 using ComicBookStoreAPI.Domain.Entities;
 using ComicBookStoreAPI.Domain.Exceptions;
 using ComicBookStoreAPI.Domain.Interfaces.DbContext;
+using ComicBookStoreAPI.Domain.Interfaces.Helpers;
 using ComicBookStoreAPI.Domain.Interfaces.Repositories;
 using ComicBookStoreAPI.Domain.Interfaces.Services;
 using ComicBookStoreAPI.Domain.Models;
@@ -12,15 +13,15 @@ namespace ComicBookStoreAPI.Services
 {
     public class RatingService : IRatingService
     {
-        private readonly IRepository<Rating> _ratingRepo;
+        private readonly IEntityHelper _entityHelper;
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IAuthorizationService _authorizationService;
 
-        public RatingService(IRepository<Rating> ratingRepo, IApplicationDbContext dbContext,
+        public RatingService(IEntityHelper entityHelper, IApplicationDbContext dbContext,
             IMapper mapper, IAuthorizationService authorizationService)
         {
-            _ratingRepo = ratingRepo;
+            _entityHelper = entityHelper;
             _dbContext = dbContext;
             _mapper = mapper;
             _authorizationService = authorizationService;

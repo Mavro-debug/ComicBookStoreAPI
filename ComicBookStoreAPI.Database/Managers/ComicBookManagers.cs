@@ -38,6 +38,14 @@ namespace ComicBookStoreAPI.Database.Managers
                 var comicBooks = _dbContext
                 .ComicBooks
                 .Include(r => r.Posters)
+                .Include(e => e.Ratings)
+                .Include(e => e.Screenwriter)
+                .Include(e => e.Translator)
+                .Include(e => e.Series)
+                .Include(e => e.CoverType)
+                .Include(e => e.Posters)
+                .Include(e => e.ComicBookIllustrators)
+                .Include(e => e.ComicBookHeroesTeams)
                 .Where(c => c.Title.ToLower().Contains(searchedPhrase.ToLower()));
 
                 if (!comicBooks.Any())
@@ -88,6 +96,31 @@ namespace ComicBookStoreAPI.Database.Managers
 
         }
 
+
+        public ComicBookDto GetById(int id)
+        {
+            var comicBook = _dbContext
+             .ComicBooks
+             .Include(e => e.Ratings)
+             .Include(e => e.Screenwriter)
+             .Include(e => e.Translator)
+             .Include(e => e.Series)
+             .Include(e => e.CoverType)
+             .Include(e => e.Posters)
+             .Include(e => e.ComicBookIllustrators)
+             .Include(e => e.ComicBookHeroesTeams)
+             .FirstOrDefault(e => e.Id == id);
+
+            if(comicBook is null)
+            {
+                throw new DatabaseException($"ComicBook entity with Id: {id} could not be found");
+            }
+            else
+            {
+                var resoult = _mapper.Map<ComicBookDto>(comicBook);
+                return resoult;
+            }
+        }
 
         public int CreateComicBook(NewComicBookDto newComicBook)
         {
