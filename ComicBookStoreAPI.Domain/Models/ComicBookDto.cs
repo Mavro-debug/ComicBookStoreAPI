@@ -22,13 +22,12 @@ namespace ComicBookStoreAPI.Domain.Models
         public Screenwriter Screenwriter { get; set; }
         public Translator Translator { get; set; }
         public Series Series { get; set; }
-        public int CoverTypeId { get; set; }
         public CoverType CoverType { get; set; }
         public int? Discount { get; set; }
         public List<PosterDto> Posters { get; set; }
         public string Description { get; set; }
-        public List<ComicBookIllustrator> ComicBookIllustrators { get; set; }
-        public List<ComicBookHeroesTeams> ComicBookHeroesTeams { get; set; }
+        public List<IllustratorDto> Illustrators { get; set; }
+        public List<HeroesTeamsDto> HeroesTeams { get; set; }
 
 
     }
