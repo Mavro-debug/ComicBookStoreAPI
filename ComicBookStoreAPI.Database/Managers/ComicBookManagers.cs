@@ -30,7 +30,7 @@ namespace ComicBookStoreAPI.Database.Managers
         }
 
 
-        public IEnumerable<ComicBookCardDto> GetAll(string searchedPhrase)
+        public IEnumerable<ComicBookDto> GetAll(string searchedPhrase)
         {
 
             if (!string.IsNullOrEmpty(searchedPhrase))
@@ -75,13 +75,13 @@ namespace ComicBookStoreAPI.Database.Managers
                         .Where(c => c.ComicBookIllustrators.Any(ci => ci.Illustrator.Name.ToLower().Contains(searchedPhrase.ToLower())));
                 }
 
-                var comicBookCards = _mapper.Map<List<ComicBookCardDto>>(comicBooks);
+                var comicBookDto = _mapper.Map<List<ComicBookDto>>(comicBooks);
 
-                return comicBookCards;
+                return comicBookDto;
             }
             else
             {
-                return new List<ComicBookCardDto>();
+                return new List<ComicBookDto>();
             }
 
 
