@@ -5,6 +5,7 @@ using ComicBookStoreAPI.Domain.Interfaces.DbContext;
 using ComicBookStoreAPI.Domain.Interfaces.Repositories;
 using ComicBookStoreAPI.Domain.Interfaces.Services;
 using ComicBookStoreAPI.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace ComicBookStoreAPI.Services
@@ -14,13 +15,15 @@ namespace ComicBookStoreAPI.Services
         private readonly IRepository<Rating> _ratingRepo;
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly IAuthorizationService _authorizationService;
 
         public RatingService(IRepository<Rating> ratingRepo, IApplicationDbContext dbContext,
-            IMapper mapper)
+            IMapper mapper, IAuthorizationService authorizationService)
         {
             _ratingRepo = ratingRepo;
             _dbContext = dbContext;
             _mapper = mapper;
+            _authorizationService = authorizationService;
         }
         public List<RatingDto> GetAll(int comicBookId)
         {
@@ -83,6 +86,8 @@ namespace ComicBookStoreAPI.Services
         public void Change(int ratingId, RatingDto ratingDto)
         {
             var rating = _mapper.Map<Rating>(ratingDto);
+
+            //var authorizationResoult = _authorizationService.AuthorizeAsync()
 
             _ratingRepo.Update(ratingId, rating);
             
