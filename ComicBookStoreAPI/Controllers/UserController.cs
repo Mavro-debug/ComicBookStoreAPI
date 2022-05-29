@@ -1,4 +1,6 @@
-﻿using ComicBookStoreAPI.Domain.Entities;
+﻿using AutoMapper;
+using ComicBookStoreAPI.Domain.Entities;
+using ComicBookStoreAPI.Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,10 +10,11 @@ namespace ComicBookStoreAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-
-        public UserController(UserManager<ApplicationUser> userManager)
+        private readonly IMapper _mapper;
+        public UserController(UserManager<ApplicationUser> userManager, IMapper mapper)
         {
             _userManager = userManager;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -24,7 +27,9 @@ namespace ComicBookStoreAPI.Controllers
                 return Unauthorized();
             }
 
-            return Ok(user);
+            var userDto = _mapper.Map<UserDto>(user);
+
+            return Ok(userDto);
         }
 
     }
