@@ -30,19 +30,7 @@ namespace ComicBookStoreAPI.Database.Managers
         }
 
 
-        public IEnumerable<ComicBookCardDto> GetAllCards()
-        {
-            var comicBooks = _dbContext
-                .ComicBooks
-                .Include(r => r.Posters)
-                .ToList();
-
-            var comicBookCards = _mapper.Map<List<ComicBookCardDto>>(comicBooks);
-
-            return comicBookCards;
-        }
-
-        public IEnumerable<ComicBookCardDto> GetAllSearchedCards(string searchedPhrase)
+        public IEnumerable<ComicBookCardDto> GetAll(string searchedPhrase)
         {
 
             if (!string.IsNullOrEmpty(searchedPhrase))
