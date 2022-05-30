@@ -15,13 +15,15 @@ namespace ComicBookStoreAPI.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IAccountService _accountService;
         private readonly ILogger<AccountController> _logger;
+        private readonly IEmailService _emailService;
 
         public AccountController(UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
+            SignInManager<ApplicationUser> signInManager, IEmailService emailService,
             IAccountService accountService, ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailService = emailService;
             _accountService = accountService;
             _logger = logger;
         }
