@@ -41,6 +41,7 @@ builder.Services.AddScoped<IRepository<ComicBookIllustrator, ComicBook, Illustra
 builder.Services.AddScoped<IRepository<ComicBookHeroesTeams, ComicBook, HeroesTeams>, ComicBookHeroesTeamsRepository>();
 
 
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddScoped<IComicBookManager, ComicBookManager>();

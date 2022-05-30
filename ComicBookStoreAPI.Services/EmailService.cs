@@ -1,11 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using ComicBookStoreAPI.Domain.Interfaces.Services;
+using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Mail;
 
 
 namespace ComicBookStoreAPI.Services
 {
-    public class EmailService
+    public class EmailService : IEmailService
     {
         private  readonly SmtpClient _smtpClient;
         private readonly IConfiguration _config;
