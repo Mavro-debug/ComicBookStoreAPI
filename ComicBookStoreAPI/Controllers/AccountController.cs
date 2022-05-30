@@ -62,6 +62,8 @@ namespace ComicBookStoreAPI.Controllers
 
                 _logger.LogInformation($"User with Id = {newUser.Id} was successfully registered");
 
+
+
                 return Ok();
             }
             return NotFound();
