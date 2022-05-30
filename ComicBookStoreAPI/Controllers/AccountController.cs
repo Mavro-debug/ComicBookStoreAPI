@@ -44,6 +44,13 @@ namespace ComicBookStoreAPI.Controllers
                 UserName = registerDto.UserName,
             };
 
+            var roleResoult = await _userManager.AddToRoleAsync(newUser, "Client");
+
+            if (roleResoult.Succeeded)
+            {
+                throw new AccountException("Unable to assign Client role to a new user");
+            }
+
             var resoult = await _userManager.CreateAsync(newUser, registerDto.Password);
 
             if (resoult.Succeeded)

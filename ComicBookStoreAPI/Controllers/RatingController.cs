@@ -33,7 +33,7 @@ namespace ComicBookStoreAPI.Controllers
             return Ok(rating);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Client")]
         [HttpPost]
         public async Task<IActionResult> Create([FromRoute] int comicBookId, [FromBody] CreateRatingDto ratingDto)
         {
@@ -44,7 +44,7 @@ namespace ComicBookStoreAPI.Controllers
             return Created($"/comicBook/{comicBookId}/rating/{createdRatingId}", null);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Client")]
         [HttpPut]
         public async Task<IActionResult> Change([FromRoute] int comicBookId, [FromBody] CreateRatingDto ratingDto)
         {

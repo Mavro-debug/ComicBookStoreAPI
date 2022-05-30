@@ -16,6 +16,21 @@ namespace ComicBookStoreAPI.Middleware
             {
                 await next.Invoke(context);
             }
+            catch (AccountException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                context.Response.StatusCode = 500;
+
+                if (string.IsNullOrEmpty(ex.Message))
+                {
+                    await context.Response.WriteAsync("A problem occurred while applying changes to the account");
+                }
+                else
+                {
+                    await context.Response.WriteAsync(ex.Message);
+                }
+            }
             catch (DatabaseException ex)
             {
                 _logger.LogError(ex, ex.Message);
