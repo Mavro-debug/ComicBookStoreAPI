@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace ComicBookStoreAPI.Controllers
 {
-    [Route("account/")]
+    [Route("account")]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -60,15 +60,43 @@ namespace ComicBookStoreAPI.Controllers
 
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
 
-                await _userManager.ConfirmEmailAsync(newUser, token);
+                var confirmationLink = Url.Action("confirmEmail", "account",
+                    new { userId = newUser.Id, token = token }, Request.Scheme);
+
 
                 _logger.LogInformation($"User with Id = {newUser.Id} was successfully registered");
 
-                await _emailService.SendEmailAsync(new MailRequest(newUser.Email, $"Witaj {newUser.UserName}", "Twoja rejestracja przebiegła pomyślnie!!!"));
+                await _emailService.SendEmailAsync(new MailRequest(newUser.Email, $"Witaj {newUser.UserName}", $"Twoja rejestracja przebiegła pomyślnie!!! <br> Potwierdz email linkiem: <br> {confirmationLink}"));
 
                 return Ok();
             }
             return NotFound();
+        }
+
+        [HttpGet]
+        [Route("confirmEmail")]
+        public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
+        {
+            if (userId == null || token == null)
+            {
+                throw new Exception(); //change to custom exception
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                throw new NotFoundException($"User with Id:{userId} was not found");
+            }
+
+            var resoult = await _userManager.ConfirmEmailAsync(user, token);
+
+            if (!resoult.Succeeded)
+            {
+                throw new Exception($"Unable ro confirm User's with Id:{userId} email");
+            }
+
+            return Ok();
         }
 
         [HttpPost]
