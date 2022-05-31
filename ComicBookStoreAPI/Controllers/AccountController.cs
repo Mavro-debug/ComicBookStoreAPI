@@ -64,7 +64,7 @@ namespace ComicBookStoreAPI.Controllers
 
                 _logger.LogInformation($"User with Id = {newUser.Id} was successfully registered");
 
-                _emailService.Send("Registratin success", "You have successly registered", registerDto.Email);
+                await _emailService.SendEmailAsync(new MailRequest(newUser.Email, $"Witaj {newUser.UserName}", "Twoja rejestracja przebiegła pomyślnie!!!"));
 
                 return Ok();
             }

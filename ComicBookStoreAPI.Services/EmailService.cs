@@ -1,40 +1,59 @@
 ﻿using ComicBookStoreAPI.Domain.Interfaces.Services;
-using Microsoft.Extensions.Configuration;
-using System.Net;
-using System.Net.Mail;
-
+using ComicBookStoreAPI.Domain.Models;
+using ComicBookStoreAPI.Domain.Models.Settings;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using Microsoft.Extensions.Options;
+using MimeKit;
 
 namespace ComicBookStoreAPI.Services
 {
     public class EmailService : IEmailService
     {
-        private  readonly SmtpClient _smtpClient;
-        private readonly IConfiguration _config;
-        public EmailService(IConfiguration configuration)
+        private readonly MailSettings _mailSettings;
+        public EmailService(IOptions<MailSettings> mailSettings)
         {
-            _config = configuration;
+            _mailSettings = mailSettings.Value;
 
-            _smtpClient = new SmtpClient("poczta.o2.pl", 465);
-
-            _smtpClient.UseDefaultCredentials = false;
-            _smtpClient.Credentials = new NetworkCredential()
-            {
-                UserName = _config.GetSection("SmtpClient").GetSection("UserName").Value,
-                Password = _config.GetSection("SmtpClient").GetSection("Password").Value
-            };
-            _smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-            _smtpClient.EnableSsl = true;
         }
 
-        public void Send(string subject, string body, string destynationEmail)
+        public async Task SendEmailAsync(MailRequest mailRequest)
         {
-            MailMessage mailMessage = new MailMessage(_config.GetSection("SmtpClient").GetSection("Email").Value, destynationEmail);
+            var email = new MimeMessage();
+            email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
+            email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
+            email.Subject = mailRequest.Subject;
+            var builder = new BodyBuilder();
 
-            mailMessage.Subject = subject;
+            if (mailRequest.Attachments != null)
+            {
+                byte[] fileBytes;
+                foreach (var file in mailRequest.Attachments)
+                {
+                    if (file.Length > 0)
+                    {
+                        using (var ms = new MemoryStream())
+                        {
+                            file.CopyTo(ms);
+                            fileBytes = ms.ToArray();
+                        }
+                        builder.Attachments.Add(file.FileName, fileBytes, ContentType.Parse(file.ContentType));
+                    }
+                }
+            }
 
-            mailMessage.Body = body;
+            builder.HtmlBody = mailRequest.Body;
 
-            _smtpClient.Send(mailMessage);
+            email.Body = builder.ToMessageBody();
+            using var smtp = new SmtpClient();
+
+            smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
+
+            smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
+
+            await smtp.SendAsync(email);
+
+            smtp.Disconnect(true);
         }
     }
 }
