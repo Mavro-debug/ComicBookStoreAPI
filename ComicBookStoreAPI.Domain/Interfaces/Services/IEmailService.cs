@@ -1,4 +1,6 @@
-﻿namespace ComicBookStoreAPI.Domain.Interfaces.Services
+﻿using ComicBookStoreAPI.Domain.Models;
+
+namespace ComicBookStoreAPI.Domain.Interfaces.Services
 {
     public interface IEmailService
     {
