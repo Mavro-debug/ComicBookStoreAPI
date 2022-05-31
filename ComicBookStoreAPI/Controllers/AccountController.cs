@@ -46,17 +46,17 @@ namespace ComicBookStoreAPI.Controllers
                 UserName = registerDto.UserName,
             };
 
-            var roleResoult = await _userManager.AddToRoleAsync(newUser, "Client");
-
-            if (roleResoult.Succeeded)
-            {
-                throw new AccountException("Unable to assign Client role to a new user");
-            }
-
             var resoult = await _userManager.CreateAsync(newUser, registerDto.Password);
 
             if (resoult.Succeeded)
             {
+                var roleResoult = await _userManager.AddToRoleAsync(newUser, "Client");
+
+                if (!roleResoult.Succeeded)
+                {
+                    throw new AccountException("Unable to assign Client role to a new user");
+                }
+
 
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
 
@@ -64,7 +64,7 @@ namespace ComicBookStoreAPI.Controllers
 
                 _logger.LogInformation($"User with Id = {newUser.Id} was successfully registered");
 
-
+                _emailService.Send("Registratin success", "You have successly registered", registerDto.Email);
 
                 return Ok();
             }

@@ -14,14 +14,15 @@ namespace ComicBookStoreAPI.Services
         {
             _config = configuration;
 
-            _smtpClient = new SmtpClient("smtp.gmail.com", 587);
+            _smtpClient = new SmtpClient("poczta.o2.pl", 465);
 
+            _smtpClient.UseDefaultCredentials = false;
             _smtpClient.Credentials = new NetworkCredential()
             {
                 UserName = _config.GetSection("SmtpClient").GetSection("UserName").Value,
                 Password = _config.GetSection("SmtpClient").GetSection("Password").Value
             };
-
+            _smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
             _smtpClient.EnableSsl = true;
         }
 

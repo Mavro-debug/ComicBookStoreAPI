@@ -8,6 +8,7 @@ using ComicBookStoreAPI.Domain.Interfaces.DbContext;
 using ComicBookStoreAPI.Domain.Interfaces.Helpers;
 using ComicBookStoreAPI.Domain.Interfaces.Repositories;
 using ComicBookStoreAPI.Domain.Interfaces.Services;
+using ComicBookStoreAPI.Domain.Models.Settings;
 using ComicBookStoreAPI.Middleware;
 using ComicBookStoreAPI.Services;
 using Microsoft.AspNetCore.Identity;
@@ -46,6 +47,8 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddScoped<IComicBookManager, ComicBookManager>();
 builder.Services.AddScoped<IRatingManager, RatingManager>();
+
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 
 builder.Services.AddAuthentication()
     .AddGoogle(opt =>
