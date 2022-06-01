@@ -33,6 +33,7 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
 builder.Services.AddScoped<ComicBookSeeder>();
+builder.Services.AddScoped<UserSeeder>();
 
 
 builder.Services.AddScoped<IEntityHelper, EntityHelper>();
@@ -70,9 +71,11 @@ var app = builder.Build();
 
 
 var scope = app.Services.CreateScope();
-var seeder = scope.ServiceProvider.GetRequiredService<ComicBookSeeder>();
+var comicbookSeeder = scope.ServiceProvider.GetRequiredService<ComicBookSeeder>();
+var userSeeder = scope.ServiceProvider.GetRequiredService<UserSeeder>();
 
-seeder.Seed();
+comicbookSeeder.Seed();
+await userSeeder.Seed();
 
 if (app.Environment.IsDevelopment())
 {
