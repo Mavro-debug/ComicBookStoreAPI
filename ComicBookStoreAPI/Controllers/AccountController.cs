@@ -2,6 +2,8 @@
 using ComicBookStoreAPI.Domain.Exceptions;
 using ComicBookStoreAPI.Domain.Interfaces.Services;
 using ComicBookStoreAPI.Domain.Models;
+using ComicBookStoreAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -26,6 +28,49 @@ namespace ComicBookStoreAPI.Controllers
             _emailService = emailService;
             _accountService = accountService;
             _logger = logger;
+        }
+
+        [Authorize(Roles = "Administrator")]
+        [HttpPost("registerEmployee")]
+        public async Task<IActionResult> RegisterEmployee([FromBody] UserRegisterEmployeeDto registerDto)
+        {
+            _logger.LogInformation("RegisterEmployee action invoked");
+
+            var findEmail = await _userManager.FindByEmailAsync(registerDto.Email);
+            if (findEmail != null)
+            {
+                return Unauthorized("email taken");
+            }
+
+            var newUser = new ApplicationUser
+            {
+                Email = registerDto.Email,
+                UserName = $"{registerDto.Name} {registerDto.LastName}",
+                PhoneNumber = registerDto.Phone,
+            };
+
+            var generatedPassword = TemporaryUserPasswordGenerator.GeneratePassword(registerDto.Name, registerDto.LastName);
+
+            var createResoult = await _userManager.CreateAsync(newUser, generatedPassword);
+
+            if (!createResoult.Succeeded)
+            {
+                throw new AccountException("Fail to create user");
+            }
+
+            var roleResoult = await _userManager.AddToRoleAsync(newUser, "Employee");
+
+            if (!roleResoult.Succeeded)
+            {
+                throw new AccountException("Unable to assign Employee role to a new user");
+            }
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(newUser);
+
+            var confirmationLink = Url.Action("confirmEmail", "account",
+                    new { userId = newUser.Id, token = token }, Request.Scheme);
+
+            _logger.LogInformation($"User with Id = {newUser.Id} was successfully registered");
         }
 
         [HttpPost]
