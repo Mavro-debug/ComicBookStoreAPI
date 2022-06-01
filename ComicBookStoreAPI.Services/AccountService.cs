@@ -14,6 +14,26 @@ namespace ComicBookStoreAPI.Services
             _config = aConfiguration;
         }
 
+        public string GenerateUserRegistrationEmialBody(string name, string confirmationLink)
+        {
+            return  $"Welcome {name}<br>" +
+                    $"You were successfully registered!!!<br>" +
+                    $"Please, confirm your email using the link:" +
+                    $"{confirmationLink}" +
+                    $"Best regards,";
+        }
+
+        public string GenerateUserRegistrationEmialBody(string name, string confirmationLink, string temporaryPassword)
+        {
+            return $"Welcome {name}<br>" +
+                    $"You were successfully registered!!!<br>" +
+                    $"Your temporary password: {temporaryPassword}" +
+                    $"It is recommended that you change your password after logging." +
+                    $"Please, confirm your email using the link:" +
+                    $"{confirmationLink}" +
+                    $"Best regards,";
+        }
+
         public string GenerateTemporaryPassword(string name, string lastName)
         {
             StringBuilder passwordBuilder = new StringBuilder();
