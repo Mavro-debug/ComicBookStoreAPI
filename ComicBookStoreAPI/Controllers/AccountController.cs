@@ -49,7 +49,7 @@ namespace ComicBookStoreAPI.Controllers
                 PhoneNumber = registerDto.Phone,
             };
 
-            var generatedPassword = TemporaryUserPasswordGenerator.GeneratePassword(registerDto.Name, registerDto.LastName);
+            var generatedPassword = _accountService.GenerateTemporaryPassword(registerDto.Name, registerDto.LastName);
 
             var createResoult = await _userManager.CreateAsync(newUser, generatedPassword);
 
@@ -71,6 +71,12 @@ namespace ComicBookStoreAPI.Controllers
                     new { userId = newUser.Id, token = token }, Request.Scheme);
 
             _logger.LogInformation($"User with Id = {newUser.Id} was successfully registered");
+
+            var emailMassage = _accountService.GenerateUserRegistrationEmialBody(newUser.UserName, token, generatedPassword);
+
+            await _emailService.SendEmailAsync(new MailRequest(newUser.Email, $"Witaj {newUser.UserName}", emailMassage));
+
+            return Ok();
         }
 
         [HttpPost]
@@ -111,7 +117,9 @@ namespace ComicBookStoreAPI.Controllers
 
                 _logger.LogInformation($"User with Id = {newUser.Id} was successfully registered");
 
-                await _emailService.SendEmailAsync(new MailRequest(newUser.Email, $"Witaj {newUser.UserName}", $"Twoja rejestracja przebiegła pomyślnie!!! <br> Potwierdz email linkiem: <br> {confirmationLink}"));
+                var emailMassage = _accountService.GenerateUserRegistrationEmialBody(registerDto.UserName, token);
+
+                await _emailService.SendEmailAsync(new MailRequest(newUser.Email, $"Witaj {newUser.UserName}", emailMassage));
 
                 return Ok();
             }
