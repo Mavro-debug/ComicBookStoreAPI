@@ -7,8 +7,8 @@ namespace ComicBookStoreAPI.Domain.Interfaces.Services
     {
         List<RatingDto> GetAll(int comicBookId);
         RatingDto GetById(int comicBookId, int ratingId);
-        Task<int> Create(int comicBookId, ApplicationUser user, CreateRatingDto ratingDto);
-        Task<int> Change(int comicBookId, ApplicationUser user, CreateRatingDto ratingDto);
+        Task<int> Create(int comicBookId, CreateRatingDto ratingDto);
+        Task<int> Change(int comicBookId, CreateRatingDto ratingDto);
         Task Delete(int comicBookId, int ratingId);
     }
 }
