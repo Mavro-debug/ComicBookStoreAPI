@@ -3,6 +3,7 @@ using ComicBookStoreAPI.Database.Helpers;
 using ComicBookStoreAPI.Database.Managers;
 using ComicBookStoreAPI.Database.Repository;
 using ComicBookStoreAPI.Database.Seeders;
+using ComicBookStoreAPI.Domain.Authorization.RequirementHandler;
 using ComicBookStoreAPI.Domain.Entities;
 using ComicBookStoreAPI.Domain.Interfaces.DbContext;
 using ComicBookStoreAPI.Domain.Interfaces.Helpers;
@@ -11,6 +12,7 @@ using ComicBookStoreAPI.Domain.Interfaces.Services;
 using ComicBookStoreAPI.Domain.Models.Settings;
 using ComicBookStoreAPI.Middleware;
 using ComicBookStoreAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -35,6 +37,8 @@ builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
 builder.Services.AddScoped<ComicBookSeeder>();
 builder.Services.AddScoped<UserSeeder>();
 
+
+builder.Services.AddScoped<IAuthorizationHandler, ComicBookResourceOperationRequirementHandler>();
 
 builder.Services.AddScoped<IEntityHelper, EntityHelper>();
 
