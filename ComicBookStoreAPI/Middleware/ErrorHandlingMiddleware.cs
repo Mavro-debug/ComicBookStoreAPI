@@ -16,7 +16,7 @@ namespace ComicBookStoreAPI.Middleware
             {
                 await next.Invoke(context);
             }
-            catch (ForbidenException ex)
+            catch (ForbiddenException ex)
             {
                 _logger.LogError(ex, ex.Message);
 
