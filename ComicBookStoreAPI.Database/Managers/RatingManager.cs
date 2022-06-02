@@ -69,7 +69,14 @@ namespace ComicBookStoreAPI.Database.Managers
 
             if (comicBook == null)
             {
-                throw new DatabaseException($"ComicBook entity with Id {comicBookId} could not be found");
+                throw new NotFoundException($"ComicBook entity with Id {comicBookId} could not be found");
+            }
+
+            var ratingExists = comicBook.Ratings.Any(x => x.User.Id == user.Id);
+
+            if (ratingExists)
+            {
+                throw new Exception($"Unauthorized, the user with Id: {user.Id} already created rating of this Comicbook Entity Id: {comicBookId}");
             }
 
             rating.ComicBook = comicBook;
