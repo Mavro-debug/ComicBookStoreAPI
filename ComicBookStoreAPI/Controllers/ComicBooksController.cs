@@ -1,5 +1,6 @@
 ﻿using ComicBookStoreAPI.Domain.Interfaces.Services;
 using ComicBookStoreAPI.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ComicBookStoreAPI.Controllers
@@ -33,9 +34,9 @@ namespace ComicBookStoreAPI.Controllers
             return Ok(comicBookDtos);
         }
 
-
         [HttpPost]
-        public IActionResult AddComicBook([FromBody] NewComicBookDto newComicBookDto)
+        [Authorize(Roles = "Administrator")]
+        public IActionResult Create([FromBody] NewComicBookDto newComicBookDto)
         {
             int newComicBookId = _comicBooksManager.CreateComicBook(newComicBookDto);
 
@@ -43,7 +44,8 @@ namespace ComicBookStoreAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult RemoveComicBook([FromRoute] int id)
+        [Authorize(Roles = "Administrator")]
+        public IActionResult Delete([FromRoute] int id)
         {
             _comicBooksManager.RemoveComicBook(id);
 
@@ -51,7 +53,8 @@ namespace ComicBookStoreAPI.Controllers
         }
 
         [HttpPatch("{id}")]
-        public IActionResult UpdateComicBook([FromRoute] int id, [FromBody] NewComicBookDto newComicBookDto)
+        [Authorize(Roles = "Administrator")]
+        public IActionResult Change([FromRoute] int id, [FromBody] NewComicBookDto newComicBookDto)
         {
             _comicBooksManager.UpdateComicBook(id, newComicBookDto);
 
