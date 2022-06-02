@@ -27,6 +27,32 @@ namespace ComicBookStoreAPI.Domain.Authorization.RequirementHandler
                 context.Succeed(requirement);
             }
 
+            if (requirement.ResourceOperation == ResourceOperation.Create)
+            {
+                var ratingExists = requirement.comicBook.Ratings.Any(x => x.User.Id == userId);
+
+                if (!ratingExists)
+                {
+                    context.Succeed(requirement);
+                }
+            }
+
+            if (requirement.ResourceOperation == ResourceOperation.Delete)
+            {
+                var role = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value;
+
+                if (role == "Administrator")
+                {
+                    context.Succeed(requirement);
+                }
+
+
+                if (resource.User.Id == userId)
+                {
+                    context.Succeed(requirement);
+                }
+            }
+
 
             return Task.CompletedTask;
         }
