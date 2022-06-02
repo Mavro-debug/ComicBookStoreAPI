@@ -22,12 +22,15 @@ namespace ComicBookStoreAPI.Domain.Authorization.RequirementHandler
                 throw new Exception("Unable to get User Id during authorization");
             }
 
-            if (requirement.ResourceOperation == ResourceOperation.Update && resource.User.Id == userId)
+            var isClient = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value == "Client";
+            var isAdministrator = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value == "Administrator";
+
+            if (requirement.ResourceOperation == ResourceOperation.Update && resource.User.Id == userId && isClient)
             {
                 context.Succeed(requirement);
             }
 
-            if (requirement.ResourceOperation == ResourceOperation.Create)
+            if (requirement.ResourceOperation == ResourceOperation.Create && isClient)
             {
                 var ratingExists = requirement.comicBook.Ratings.Any(x => x.User.Id == userId);
 
@@ -37,11 +40,10 @@ namespace ComicBookStoreAPI.Domain.Authorization.RequirementHandler
                 }
             }
 
-            if (requirement.ResourceOperation == ResourceOperation.Delete)
+            if (requirement.ResourceOperation == ResourceOperation.Delete && (isClient || isAdministrator))
             {
-                var role = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value;
 
-                if (role == "Administrator")
+                if (isAdministrator)
                 {
                     context.Succeed(requirement);
                 }
