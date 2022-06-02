@@ -113,7 +113,7 @@ namespace ComicBookStoreAPI.Database.Managers
 
             if(comicBook is null)
             {
-                throw new DatabaseException($"ComicBook entity with Id: {id} could not be found");
+                throw new NotFoundException($"ComicBook entity with Id: {id} could not be found");
             }
             else
             {
@@ -183,7 +183,7 @@ namespace ComicBookStoreAPI.Database.Managers
 
             if (comicBook == null)
             {
-                throw new DatabaseException($"ComicBook entity with Id: {id} could not be found");
+                throw new NotFoundException($"ComicBook entity with Id: {id} could not be found");
             }
 
             _dbContext.Remove(comicBook);
