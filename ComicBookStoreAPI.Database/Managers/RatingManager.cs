@@ -63,7 +63,7 @@ namespace ComicBookStoreAPI.Database.Managers
             return ratingDto;
         }
 
-        public async Task<int> Create(int comicBookId, ApplicationUser user, CreateRatingDto ratingDto)
+        public async Task<int> Create(int comicBookId, CreateRatingDto ratingDto)
         {
             Rating rating = _mapper.Map<Rating>(ratingDto);
 
@@ -79,26 +79,19 @@ namespace ComicBookStoreAPI.Database.Managers
 
             if (!authorizationResult.Succeeded)
             {
-                throw new ForbiddenException($"User with Id: {user.Id} unauthorized to create rating.");
-            }
-
-            var ratingExists = comicBook.Ratings.Any(x => x.User.Id == user.Id);
-
-            if (ratingExists)
-            {
-                throw new Exception($"Unauthorized, the user with Id: {user.Id} already created rating of this Comicbook Entity Id: {comicBookId}");
+                throw new ForbiddenException($"Unauthorized, the user with Id: {_userContextService.GetUserId} already created rating of this Comicbook Entity Id: {comicBookId}");
             }
 
             rating.ComicBook = comicBook;
 
-            rating.User = user;
+            rating.User = _dbContext.Users.First(x => x.Id == _userContextService.GetUserId);
 
             _dbContext.Add(rating);
 
             return rating.Id;
         }
 
-        public async Task<int> Change(int comicBookId, ApplicationUser user, CreateRatingDto ratingDto)
+        public async Task<int> Change(int comicBookId, int ratingId, CreateRatingDto ratingDto)
         {
             var comicBook = _dbContext.ComicBooks.FirstOrDefault(x => x.Id == comicBookId);
 
@@ -107,11 +100,11 @@ namespace ComicBookStoreAPI.Database.Managers
                 throw new NotFoundException($"ComicBook entity with Id {comicBookId} could not be found");
             }
 
-            var rating = comicBook.Ratings.FirstOrDefault(x => x.User.Id == user.Id);
+            var rating = comicBook.Ratings.FirstOrDefault(x => x.Id == ratingId);
 
             if (rating == null)
             {
-                throw new NotFoundException($"Rating entity with ComicBook Id: {comicBookId} and User Id: {user.Id} could not be found");
+                throw new NotFoundException($"Rating with the Id: {ratingId} for the ComicBook with Id: {comicBookId} were not found");
             }
 
             var authorizationResult = await _authorizationService.AuthorizeAsync(_userContextService.User, _dbContext.Rating,
@@ -119,7 +112,7 @@ namespace ComicBookStoreAPI.Database.Managers
 
             if (!authorizationResult.Succeeded)
             {
-                throw new ForbiddenException($"User with Id: {user.Id} unauthorized to change rating Id: {rating.Id}.");
+                throw new ForbiddenException($"User with Id: {_userContextService.GetUserId} unauthorized to change rating Id: {rating.Id}.");
             }
 
             rating.Commentary = ratingDto.Commentary;
