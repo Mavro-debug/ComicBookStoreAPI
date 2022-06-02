@@ -72,6 +72,8 @@ namespace ComicBookStoreAPI.Database.Managers
                 throw new NotFoundException($"ComicBook entity with Id {comicBookId} could not be found");
             }
 
+            var authorizationResult = _authorizationService.AuthorizeAsync()
+
             var ratingExists = comicBook.Ratings.Any(x => x.User.Id == user.Id);
 
             if (ratingExists)
