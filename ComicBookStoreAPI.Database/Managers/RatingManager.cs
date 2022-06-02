@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using ComicBookStoreAPI.Database;
 using ComicBookStoreAPI.Domain.Entities;
 using ComicBookStoreAPI.Domain.Exceptions;
-using ComicBookStoreAPI.Domain.Interfaces.Helpers;
 using ComicBookStoreAPI.Domain.Interfaces.Services;
 using ComicBookStoreAPI.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -15,13 +13,16 @@ namespace ComicBookStoreAPI.Database.Managers
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IUserContextService _userContextService;
 
         public RatingManager( ApplicationDbContext dbContext,
-            IMapper mapper, IAuthorizationService authorizationService)
+            IMapper mapper, IAuthorizationService authorizationService,
+            IUserContextService userContextService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _authorizationService = authorizationService;
+            _userContextService = userContextService;
         }
         public List<RatingDto> GetAll(int comicBookId)
         {
