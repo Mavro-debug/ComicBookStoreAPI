@@ -16,6 +16,21 @@ namespace ComicBookStoreAPI.Middleware
             {
                 await next.Invoke(context);
             }
+            catch (ForbidenException ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                context.Response.StatusCode = 403;
+
+                if (string.IsNullOrEmpty(ex.Message))
+                {
+                    await context.Response.WriteAsync("Access forbidden");
+                }
+                else
+                {
+                    await context.Response.WriteAsync(ex.Message);
+                }
+            }
             catch (AccountException ex)
             {
                 _logger.LogError(ex, ex.Message);
@@ -31,7 +46,7 @@ namespace ComicBookStoreAPI.Middleware
                     await context.Response.WriteAsync(ex.Message);
                 }
             }
-            catch (DatabaseException ex)
+            catch (ForbidenException ex)
             {
                 _logger.LogError(ex, ex.Message);
 
