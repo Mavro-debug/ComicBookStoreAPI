@@ -37,22 +37,19 @@ namespace ComicBookStoreAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromRoute] int comicBookId, [FromBody] CreateRatingDto ratingDto)
         {
-            var user = await _userManager.GetUserAsync(User);
-
-            int createdRatingId = _ratingManager.Create(comicBookId, user, ratingDto);
+            int createdRatingId = await _ratingManager.Create(comicBookId, ratingDto);
 
             return Created($"/comicBook/{comicBookId}/rating/{createdRatingId}", null);
         }
 
         [Authorize(Roles = "Client")]
-        [HttpPut]
-        public async Task<IActionResult> Change([FromRoute] int comicBookId, [FromBody] CreateRatingDto ratingDto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Change([FromRoute] int comicBookId, [FromRoute] int id, [FromBody] CreateRatingDto ratingDto)
         {
-            var user = await _userManager.GetUserAsync(User);
 
-            _ratingManager.Change(comicBookId, user, ratingDto);
+            int resoult = await _ratingManager.Change(comicBookId, id, ratingDto);
 
-            return Ok();
+            return Ok($"/comicBook/{comicBookId}/rating/{resoult}");
         }
     }
 }
