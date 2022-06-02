@@ -11,11 +11,9 @@ namespace ComicBookStoreAPI.Controllers
     public class RatingController : ControllerBase
     {
         private readonly IRatingManager _ratingManager;
-        private readonly UserManager<ApplicationUser> _userManager;
-        public RatingController(IRatingManager ratingManager, UserManager<ApplicationUser> userManager)
+        public RatingController(IRatingManager ratingManager)
         {
             _ratingManager = ratingManager;
-            _userManager = userManager;
         }
         [HttpGet]
         public IActionResult GetAll([FromRoute] int comicBookId)
