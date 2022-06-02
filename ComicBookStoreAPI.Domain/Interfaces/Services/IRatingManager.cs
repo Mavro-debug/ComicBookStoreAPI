@@ -9,5 +9,6 @@ namespace ComicBookStoreAPI.Domain.Interfaces.Services
         RatingDto GetById(int comicBookId, int id);
         Task<int> Create(int comicBookId, ApplicationUser user, CreateRatingDto ratingDto);
         Task<int> Change(int comicBookId, ApplicationUser user, CreateRatingDto ratingDto);
+        Task Delete(int comicBookId, int ratingId);
     }
 }
