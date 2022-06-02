@@ -131,5 +131,34 @@ namespace ComicBookStoreAPI.Database.Managers
             return rating.Id;
         }
 
+
+        public async Task Delete(int comicBookId, int ratingId)
+        {
+            var comicBook = _dbContext.ComicBooks.FirstOrDefault(x => x.Id == comicBookId);
+
+            if (comicBook == null)
+            {
+                throw new NotFoundException($"ComicBook entity with Id {comicBookId} could not be found");
+            }
+
+            var rating = comicBook.Ratings.FirstOrDefault(x => x.Id == ratingId);
+
+            if (rating == null)
+            {
+                throw new NotFoundException($"Not found ComicBook with Id: {comicBookId} which has a Rating with Id: {ratingId}");
+            }
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(_userContextService.User, _dbContext.Rating,
+               new ComicBookResourceOperationRequirement(ResourceOperation.Delete, comicBook));
+
+            if (!authorizationResult.Succeeded)
+            {
+                throw new ForbiddenException($"User with Id: {_userContextService.GetUserId} unauthorized to change rating Id: {rating.Id}.");
+            }
+
+            _dbContext.Remove(rating);
+
+            _dbContext.SaveChanges();
+        }
     }
 }
