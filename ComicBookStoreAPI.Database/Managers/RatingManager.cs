@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ComicBookStoreAPI.Domain.Authorization.Requirements;
 using ComicBookStoreAPI.Domain.Entities;
 using ComicBookStoreAPI.Domain.Exceptions;
 using ComicBookStoreAPI.Domain.Interfaces.Services;
@@ -31,12 +32,12 @@ namespace ComicBookStoreAPI.Database.Managers
                 .FirstOrDefault(c => c.Id == comicBookId);
 
             if (comicBook == null)
-                throw new DatabaseException($"The ComicBook with Id: {comicBookId} was not found");
+                throw new NotFoundException($"The ComicBook with Id: {comicBookId} was not found");
 
             var ratings = comicBook.Ratings.ToList();
 
             if (ratings == null)
-                throw new DatabaseException($"Ratings for the ComicBook with Id: {comicBookId} were not found");
+                throw new NotFoundException($"Ratings for the ComicBook with Id: {comicBookId} were not found");
 
             var ratingDto = _mapper.Map<List<RatingDto>>(ratings);
 
@@ -50,19 +51,19 @@ namespace ComicBookStoreAPI.Database.Managers
                .FirstOrDefault(c => c.Id == comicBookId);
 
             if (comicBook == null)
-                throw new DatabaseException($"The ComicBook with Id: {comicBookId} was not found");
+                throw new NotFoundException($"The ComicBook with Id: {comicBookId} was not found");
 
             var ratings = comicBook.Ratings.FirstOrDefault(r => r.Id == id);
 
             if (ratings == null)
-                throw new DatabaseException($"Rating with the Id: {id} for the ComicBook with Id: {comicBookId} were not found");
+                throw new NotFoundException($"Rating with the Id: {id} for the ComicBook with Id: {comicBookId} were not found");
 
             var ratingDto = _mapper.Map<RatingDto>(ratings);
 
             return ratingDto;
         }
 
-        public int Create(int comicBookId, ApplicationUser user, CreateRatingDto ratingDto)
+        public async Task<int> Create(int comicBookId, ApplicationUser user, CreateRatingDto ratingDto)
         {
             Rating rating = _mapper.Map<Rating>(ratingDto);
 
@@ -73,7 +74,13 @@ namespace ComicBookStoreAPI.Database.Managers
                 throw new NotFoundException($"ComicBook entity with Id {comicBookId} could not be found");
             }
 
-            var authorizationResult = _authorizationService.AuthorizeAsync()
+            var authorizationResult = await _authorizationService.AuthorizeAsync(_userContextService.User, rating,
+               new ComicBookResourceOperationRequirement(ResourceOperation.Create, comicBook));
+
+            if (!authorizationResult.Succeeded)
+            {
+                throw new ForbiddenException($"User with Id: {user.Id} unauthorized to create rating.");
+            }
 
             var ratingExists = comicBook.Ratings.Any(x => x.User.Id == user.Id);
 
@@ -91,20 +98,28 @@ namespace ComicBookStoreAPI.Database.Managers
             return rating.Id;
         }
 
-        public int Change(int comicBookId, ApplicationUser user, CreateRatingDto ratingDto)
+        public async Task<int> Change(int comicBookId, ApplicationUser user, CreateRatingDto ratingDto)
         {
             var comicBook = _dbContext.ComicBooks.FirstOrDefault(x => x.Id == comicBookId);
 
             if (comicBook == null)
             {
-                throw new DatabaseException($"ComicBook entity with Id {comicBookId} could not be found");
+                throw new NotFoundException($"ComicBook entity with Id {comicBookId} could not be found");
             }
 
             var rating = comicBook.Ratings.FirstOrDefault(x => x.User.Id == user.Id);
 
             if (rating == null)
             {
-                throw new DatabaseException($"Rating entity with ComicBook Id: {comicBookId} and User Id: {user.Id} could not be found");
+                throw new NotFoundException($"Rating entity with ComicBook Id: {comicBookId} and User Id: {user.Id} could not be found");
+            }
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(_userContextService.User, _dbContext.Rating,
+               new ComicBookResourceOperationRequirement(ResourceOperation.Update, comicBook));
+
+            if (!authorizationResult.Succeeded)
+            {
+                throw new ForbiddenException($"User with Id: {user.Id} unauthorized to change rating Id: {rating.Id}.");
             }
 
             rating.Commentary = ratingDto.Commentary;

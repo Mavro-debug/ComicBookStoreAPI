@@ -19,7 +19,7 @@ namespace ComicBookStoreAPI.Domain.Authorization.RequirementHandler
 
             if (userId == null)
             {
-                throw new Exception("Unable to get User Id during auth authorization");
+                throw new Exception("Unable to get User Id during authorization");
             }
 
             if (requirement.ResourceOperation == ResourceOperation.Update && resource.User.Id == userId)
