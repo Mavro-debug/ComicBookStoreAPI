@@ -51,5 +51,15 @@ namespace ComicBookStoreAPI.Controllers
 
             return Ok($"/comicBook/{comicBookId}/rating/{resoult}");
         }
+
+        [Authorize(Roles = "Client,Administrator")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int comicBookId, [FromRoute] int id)
+        {
+
+            await _ratingManager.Delete(comicBookId, id);
+
+            return NoContent();
+        }
     }
 }
