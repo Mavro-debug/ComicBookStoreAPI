@@ -5,9 +5,9 @@ using System.Security.Claims;
 
 namespace ComicBookStoreAPI.Domain.Authorization.RequirementHandler
 {
-    public class ResourceOperationRequirementHandler : AuthorizationHandler<ResourceOperationRequirement, Rating>
+    public class ComicBookResourceOperationRequirementHandler : AuthorizationHandler<ComicBookResourceOperationRequirement, Rating>
     {
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ResourceOperationRequirement requirement, Rating resource)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ComicBookResourceOperationRequirement requirement, Rating resource)
         {
             if (requirement.ResourceOperation == ResourceOperation.Read)
             {
